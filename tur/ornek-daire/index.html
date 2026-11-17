@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Gezilebilir Daire Turu</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: full-bleed 360° view; glass panels pinned to corners; room strip along the bottom edge. Single dark look on purpose (imagery first). */
+:root{
+  --ink:#0f0e0c; --glass:rgba(18,17,15,.62); --glass-hi:rgba(28,26,23,.82);
+  --line:rgba(236,226,208,.16); --fg:#f3ede3; --mute:#b9ae9c; --trav:#d9c3a0; --trav-ink:#2a2219;
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{margin:0;background:var(--ink);color:var(--fg);font-family:var(--f-body);overflow:hidden;-webkit-font-smoothing:antialiased}
+#stage{position:fixed;inset:0;touch-action:none;cursor:grab}
+#stage.dragging{cursor:grabbing}
+canvas{display:block}
+.glass{background:var(--glass);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--line);border-radius:14px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible{outline:2px solid var(--trav);outline-offset:2px}
+
+/* top bar */
+.top{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:10px;align-items:flex-start;justify-content:space-between;pointer-events:none;z-index:5}
+.top>*{pointer-events:auto}
+.brand{padding:10px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.brand b{font-family:var(--f-display);font-weight:700;letter-spacing:.14em;font-size:13px}
+.brand span{font-size:12px;color:var(--mute)}
+.modes{display:flex;padding:4px;gap:2px}
+.modes button{padding:8px 12px;border-radius:10px;font-size:13px;font-weight:500;color:var(--mute)}
+.modes button[aria-pressed="true"]{background:var(--trav);color:var(--trav-ink)}
+
+/* room card */
+.card{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));padding:14px 16px;max-width:min(340px,calc(100% - 32px));z-index:5;transition:opacity .3s}
+.card h1{font-family:var(--f-display);font-weight:700;font-size:26px;line-height:1.05;margin:0;text-wrap:balance}
+.card .m2{font-variant-numeric:tabular-nums;color:var(--trav);font-weight:600;font-size:14px;margin-top:4px}
+.card p{margin:8px 0 0;font-size:13.5px;line-height:1.45;color:#ddd3c3}
+.card .hint{margin-top:10px;font-size:11.5px;color:var(--mute);letter-spacing:.02em}
+
+/* bottom strip */
+.strip{position:fixed;left:0;right:0;bottom:0;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;gap:8px;align-items:center;z-index:5;background:linear-gradient(to top,rgba(10,9,8,.7),rgba(10,9,8,0))}
+.play{flex:none;display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:var(--trav);color:var(--trav-ink);font-weight:600;font-size:13px}
+.play svg{width:14px;height:14px}
+.rooms{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;min-width:0;padding:2px}
+.rooms::-webkit-scrollbar{display:none}
+.rooms button{flex:none;padding:8px 12px;border-radius:999px;font-size:13px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);white-space:nowrap}
+.rooms button small{color:var(--mute);margin-left:6px;font-variant-numeric:tabular-nums}
+.rooms button[aria-current="true"]{border-color:var(--trav);color:var(--trav)}
+
+/* hotspots + pins (HTML overlay) */
+#overlay{position:fixed;inset:0;pointer-events:none;z-index:4}
+.hs{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:6px}
+.hs .ring{width:46px;height:46px;border-radius:50%;border:2px solid rgba(243,237,227,.9);background:rgba(15,14,12,.35);display:grid;place-items:center;box-shadow:0 0 0 6px rgba(243,237,227,.12);transition:transform .2s,background .2s}
+.hs .ring svg{width:18px;height:18px}
+.hs:hover .ring,.hs:focus-visible .ring{transform:scale(1.08);background:var(--trav);color:var(--trav-ink)}
+.hs .lbl{font-size:12px;font-weight:600;padding:4px 9px;border-radius:999px;background:var(--glass-hi);white-space:nowrap}
+.pin{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;padding:6px 10px;border-radius:10px;background:var(--glass-hi);border:1px solid var(--line);font-size:12px;font-weight:600;white-space:nowrap}
+.pin::after{content:"";position:absolute;left:50%;bottom:-6px;width:8px;height:8px;background:var(--trav);border-radius:50%;transform:translateX(-50%)}
+.pin small{color:var(--trav);margin-left:5px;font-variant-numeric:tabular-nums}
+
+/* fade + loader */
+#fade{position:fixed;inset:0;background:var(--ink);opacity:0;pointer-events:none;transition:opacity .35s;z-index:3}
+#loader{position:fixed;inset:0;display:grid;place-items:center;z-index:9;background:var(--ink);transition:opacity .5s}
+#loader .box{display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;padding:0 24px}
+#loader b{font-family:var(--f-display);letter-spacing:.2em;font-size:15px}
+#loader .bar{width:180px;height:2px;background:var(--line);overflow:hidden;border-radius:2px}
+#loader .bar i{display:block;height:100%;width:0;background:var(--trav);transition:width .3s}
+#loader span{font-size:12.5px;color:var(--mute)}
+.note{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));font-size:11px;color:var(--mute);padding:6px 10px;z-index:5;max-width:220px;text-align:right}
+@media (max-width:560px){
+  .card{bottom:calc(76px + env(safe-area-inset-bottom,0px));padding:12px 14px}
+  .card h1{font-size:20px}.card p{font-size:12.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card .hint{display:none}
+  .note{display:none}
+  body.is-model .card{display:none}
+  .brand span{display:none}
+}
+@media (prefers-reduced-motion:reduce){#fade,.card,#loader{transition:none}}
+</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}</style>
+</head>
+<body>
+
+
+<div id="stage"></div>
+<div id="overlay"></div>
+<div id="fade"></div>
+
+<div class="top">
+  <div class="brand glass"><b>NAKKAŞHÂNE</b><span>Örnek daire · 2+1 · yaklaşık 70 m² net</span></div>
+  <div class="modes glass" role="group" aria-label="Görünüm">
+    <button id="m-tour" aria-pressed="true">Gezinti</button>
+    <button id="m-model" aria-pressed="false">Maket</button>
+  </div>
+</div>
+
+<div class="card glass" id="card">
+  <h1 id="c-name">Salon</h1>
+  <div class="m2" id="c-m2">21,32 m²</div>
+  <p id="c-text"></p>
+  <div class="hint" id="c-hint">Sürükleyerek etrafa bakın · halkalara dokunup diğer odaya geçin</div>
+</div>
+<div class="note glass">Görüntüler stüdyonun gerçek render motoruyla çekilmiş 360° karelerdir.</div>
+
+<div class="strip">
+  <button class="play" id="play" aria-pressed="false"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path id="play-ico" d="M4 2.5v11l9-5.5z"/></svg><span id="play-t">Rehberli tur</span></button>
+  <div class="rooms" id="rooms" role="tablist" aria-label="Odalar"></div>
+</div>
+
+<div id="loader"><div class="box"><b>NAKKAŞHÂNE</b><div class="bar"><i id="lbar"></i></div><span id="ltext">Daire hazırlanıyor</span></div></div>
+
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+// Room data. x,y = Blender plan coords (m); yaw = pano forward heading (deg). m² from the approved floor plan.
+const FLOOR=6.75, EYE=1.55;
+const ROOMS=[
+ {id:'salon',  name:'Salon',            m2:'21,32 m²', x:-8.6, y:15.4, yaw:0, look:160,   to:['yemek','balkon'],
+  text:'Arka bahçeye bakan iki geniş doğrama. Oturma grubu, TV duvarında ahşap çıtalı panel ve gizli ışıklı asma tavan.'},
+ {id:'yemek',  name:'Yemek alanı',      m2:'salonun parçası', x:-7.3, y:13.0, yaw:180, to:['salon','hol'],
+  text:'Salonun girişe yakın bölümü. Altı kişilik masa, hole doğrudan bağlantı.'},
+ {id:'mutfak', name:'Mutfak',           m2:'13,80 m²', x:-6.0, y:11.3, yaw:90,  to:['hol'],
+  text:'Ankastre setli tezgâh ve kahvaltı masasına yetecek alan. Tezgâh altı LED aydınlatma.'},
+ {id:'hol',    name:'Giriş holü',       m2:'≈5,2 m²',  x:-4.4, y:12.85,yaw:90,  to:['yemek','mutfak','yatak1','yatak2','banyo'],
+  text:'Daire kapısından bütün odalara dağılan hol. Ayakkabılık ve boy aynası.'},
+ {id:'yatak1', name:'Yatak odası',      m2:'13,10 m²', x:-4.2, y:14.7, yaw:0,   to:['hol'],
+  text:'Ebeveyn odası. Arka bahçe penceresi, tam boy gömme dolap.'},
+ {id:'yatak2', name:'İkinci yatak odası',m2:'11,30 m²', x:-1.6, y:15.0, yaw:0,  to:['hol'],
+  text:'Çocuk odası ya da çalışma odası olarak kullanılabilir. Bahçe cephesinde.'},
+ {id:'banyo',  name:'Banyo',            m2:'4,25 m²',  x:-1.5, y:12.9, yaw:0,   to:['hol'],
+  text:'Cam bölmeli duş, asma klozet ve tezgâh altı dolaplı lavabo.'},
+ {id:'balkon', name:'Balkon',           m2:'8,36 m²',  x:-12.1,y:13.5, yaw:0,   to:['salon'],
+  text:'Salondan çıkılan balkon. İki kişilik oturma takımı sığıyor.'},
+];
+const byId=Object.fromEntries(ROOMS.map(r=>[r.id,r]));
+const CX=-5.6, CY=13.6;                       // model centre (plan coords)
+const W=(x,y,z)=>new THREE.Vector3(x-CX, z-FLOOR, -(y-CY)); // Blender -> three, centred, floor at 0
+
+// renderer
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+stage.appendChild(renderer.domElement);
+const overlay=document.getElementById('overlay');
+
+// ---------- pano scene ----------
+const pScene=new THREE.Scene();
+const pCam=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,200);
+const geo=new THREE.SphereGeometry(50,64,40); geo.scale(-1,1,1);
+const spheres=[0,1].map(()=>{const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));pScene.add(m);return m;});
+const baseFov=()=>innerWidth/innerHeight<0.8?100:(innerWidth/innerHeight<1.2?88:75);
+let front=0, cur=null, lon=0, lat=0, fov=baseFov();
+const texCache={}; const tl=new THREE.TextureLoader();
+function loadTex(id){
+  if(!texCache[id]) texCache[id]=new Promise((res,rej)=>tl.load(`pano/${id}.jpg`,t=>{t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=renderer.capabilities.getMaxAnisotropy();res(t)},undefined,rej));
+  return texCache[id];
+}
+async function goRoom(id,{keepView=false}={}){
+  const r=byId[id]; if(!r) return;
+  const tex=await loadTex(id);
+  // face the room we are arriving into: keep heading of travel
+  if(cur && !keepView){ const a=byId[cur]; lon=THREE.MathUtils.radToDeg(Math.atan2(r.x-a.x, r.y-a.y)); lat=-5; }
+  const back=1-front, s=spheres[back];
+  s.material.map=tex; s.material.needsUpdate=true; s.rotation.y=THREE.MathUtils.degToRad(r.yaw)-Math.PI/2;
+  s.renderOrder=2; spheres[front].renderOrder=1;
+  const t0=performance.now(), dur=matchMedia('(prefers-reduced-motion: reduce)').matches?1:650;
+  const old=spheres[front];
+  await new Promise(done=>{(function step(){const k=Math.min(1,(performance.now()-t0)/dur);s.material.opacity=k;if(k<1)requestAnimationFrame(step);else{old.material.opacity=0;done();}})();});
+  front=back; cur=id; buildHotspots(); setCard(r); markRoom(id);
+  r.to.forEach(loadTex);                      // prefetch neighbours
+}
+// look controls
+let drag=null;
+stage.addEventListener('pointerdown',e=>{ if(mode!=='tour')return; drag={x:e.clientX,y:e.clientY,lon,lat}; stage.classList.add('dragging'); stage.setPointerCapture(e.pointerId); stopTour(); });
+stage.addEventListener('pointermove',e=>{ if(!drag)return; const k=fov/innerHeight; lon=drag.lon-(e.clientX-drag.x)*k; lat=THREE.MathUtils.clamp(drag.lat+(e.clientY-drag.y)*k,-85,85); });
+const endDrag=()=>{drag=null;stage.classList.remove('dragging')}; stage.addEventListener('pointerup',endDrag); stage.addEventListener('pointercancel',endDrag);
+stage.addEventListener('wheel',e=>{ if(mode!=='tour')return; fov=THREE.MathUtils.clamp(fov+e.deltaY*0.04,35,110); e.preventDefault(); },{passive:false});
+// pinch
+const touches=new Map(); let pinch0=null;
+stage.addEventListener('touchstart',e=>{ if(e.touches.length===2){pinch0={d:Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY),fov}; drag=null;} },{passive:true});
+stage.addEventListener('touchmove',e=>{ if(pinch0&&e.touches.length===2&&mode==='tour'){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);fov=THREE.MathUtils.clamp(pinch0.fov*pinch0.d/d,35,110);} },{passive:true});
+stage.addEventListener('touchend',()=>{pinch0=null},{passive:true});
+
+// hotspots
+let hsEls=[];
+const arrow='<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 15V5M5 10l5-5 5 5"/></svg>';
+function buildHotspots(){
+  hsEls.forEach(h=>h.el.remove()); hsEls=[];
+  if(mode!=='tour') return;
+  const a=byId[cur];
+  for(const id of a.to){
+    const b=byId[id]; const dx=b.x-a.x, dy=b.y-a.y; const d=Math.hypot(dx,dy);
+    const dist=Math.min(d,2.6);
+    const p=new THREE.Vector3(dx/d*dist, -EYE+0.05, -dy/d*dist);   // on the floor, toward the next room
+    const el=document.createElement('button'); el.className='hs'; el.setAttribute('aria-label',b.name+' odasına geç');
+    el.innerHTML=`<span class="ring">${arrow}</span><span class="lbl">${b.name}</span>`;
+    el.addEventListener('click',()=>{stopTour();goRoom(id)});
+    overlay.appendChild(el); hsEls.push({el,p});
+  }
+}
+function placeHotspots(){
+  const v=new THREE.Vector3();
+  for(const h of hsEls){
+    v.copy(h.p).project(pCam);
+    const vis=v.z<1 && Math.abs(v.x)<1.2 && Math.abs(v.y)<1.2;
+    h.el.style.display=vis?'flex':'none';
+    if(vis){h.el.style.left=((v.x+1)/2*innerWidth)+'px';h.el.style.top=((1-v.y)/2*innerHeight)+'px';}
+  }
+}
+
+// ---------- model (dollhouse) ----------
+const mScene=new THREE.Scene(); mScene.background=new THREE.Color(0x1a1815);
+const mCam=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,0.1,300);
+mCam.position.set(-9,15,14); if(innerWidth/innerHeight<0.8) mCam.position.set(-14,24,22);
+const orbit=new OrbitControls(mCam,renderer.domElement); orbit.enableDamping=true; orbit.target.set(-2.2,0.5,0);
+orbit.maxPolarAngle=Math.PI*0.47; orbit.minDistance=5; orbit.maxDistance=40; orbit.enabled=false;
+const pmrem=new THREE.PMREMGenerator(renderer);
+mScene.environment=pmrem.fromScene(new RoomEnvironment(),0.04).texture;
+mScene.add(new THREE.HemisphereLight(0xfff4e6,0x2a2622,0.6));
+const sun=new THREE.DirectionalLight(0xfff0dc,1.6); sun.position.set(-8,14,-6); mScene.add(sun);
+const ground=new THREE.Mesh(new THREE.CircleGeometry(30,64),new THREE.MeshStandardMaterial({color:0x24211d,roughness:1}));
+ground.rotation.x=-Math.PI/2; ground.position.y=-0.02; mScene.add(ground);
+let modelLoaded=null, pinEls=[];
+function loadModel(){
+  if(modelLoaded) return modelLoaded;
+  const dl=new DRACOLoader(); dl.setDecoderPath('draco/');
+  const gl=new GLTFLoader(); gl.setDRACOLoader(dl);
+  modelLoaded=new Promise((res,rej)=>gl.load('daire.glb',g=>{
+    const root=g.scene; root.position.set(-CX,-FLOOR,CY);
+    root.traverse(o=>{ if(o.isMesh){ o.material.side=THREE.FrontSide; if(o.material.transparent){o.material.depthWrite=false;} } });
+    mScene.add(root); res(root);
+  },undefined,rej));
+  return modelLoaded;
+}
+function buildPins(){
+  pinEls.forEach(p=>p.el.remove()); pinEls=[];
+  if(mode!=='model') return;
+  for(const r of ROOMS){
+    if(r.id==='yemek') continue;
+    const el=document.createElement('button'); el.className='pin'; el.innerHTML=`${r.name}<small>${r.m2.includes('m²')?r.m2:''}</small>`;
+    el.addEventListener('click',()=>enterTour(r.id));
+    overlay.appendChild(el); pinEls.push({el,p:W(r.x,r.y,FLOOR+1.3)});
+  }
+}
+function placePins(){
+  const v=new THREE.Vector3();
+  for(const h of pinEls){ v.copy(h.p).project(mCam); const vis=v.z<1; h.el.style.display=vis?'block':'none';
+    if(vis){h.el.style.left=((v.x+1)/2*innerWidth)+'px';h.el.style.top=((1-v.y)/2*innerHeight)+'px';} }
+}
+
+// ---------- modes ----------
+let mode='tour';
+const fade=document.getElementById('fade');
+const flash=async fn=>{fade.style.opacity=1;await new Promise(r=>setTimeout(r,350));await fn();fade.style.opacity=0;};
+async function enterModel(){
+  stopTour(); document.body.classList.add('is-model');
+  await flash(async()=>{ mode='model'; orbit.enabled=true; setPressed(); buildHotspots();
+    document.getElementById('c-hint').textContent='Döndürmek için sürükleyin · oda adına dokunup içeri girin';
+    try{ setLoad(.3,'Maket yükleniyor'); showLoader(true); await loadModel(); }catch(e){ document.getElementById('c-text').textContent='Maket dosyası açılamadı. Sayfayı yenileyip tekrar deneyin.'; }
+    showLoader(false); buildPins(); });
+}
+async function enterTour(id){
+  document.body.classList.remove('is-model');
+  await flash(async()=>{ mode='tour'; orbit.enabled=false; setPressed(); buildPins();
+    document.getElementById('c-hint').textContent='Sürükleyerek etrafa bakın · halkalara dokunup diğer odaya geçin';
+    cur=null; await goRoom(id||'salon'); });
+}
+function setPressed(){document.getElementById('m-tour').setAttribute('aria-pressed',mode==='tour');document.getElementById('m-model').setAttribute('aria-pressed',mode==='model');}
+document.getElementById('m-model').onclick=()=>{ if(mode!=='model') enterModel(); };
+document.getElementById('m-tour').onclick=()=>{ if(mode!=='tour') enterTour(cur||'salon'); };
+
+// card + room strip
+function setCard(r){
+  document.getElementById('c-name').textContent=r.name;
+  document.getElementById('c-m2').textContent=r.m2;
+  document.getElementById('c-text').textContent=r.text;
+}
+const roomsEl=document.getElementById('rooms');
+for(const r of ROOMS){
+  const b=document.createElement('button'); b.setAttribute('role','tab'); b.dataset.id=r.id;
+  b.innerHTML=`${r.name}${r.m2.includes('m²')?`<small>${r.m2.replace(' m²','')}</small>`:''}`;
+  b.onclick=()=>{ stopTour(); if(mode==='tour') goRoom(r.id); else enterTour(r.id); };
+  roomsEl.appendChild(b);
+}
+function markRoom(id){ roomsEl.querySelectorAll('button').forEach(b=>{const on=b.dataset.id===id;b.setAttribute('aria-current',on);if(on)b.scrollIntoView({inline:'nearest',block:'nearest',behavior:'smooth'});}); }
+
+// guided tour
+const ORDER=['salon','yemek','hol','mutfak','yatak1','yatak2','banyo','balkon'];
+let touring=false, tourTimer=null;
+function stopTour(){ if(!touring)return; touring=false; clearTimeout(tourTimer); setPlay(); }
+function setPlay(){ document.getElementById('play').setAttribute('aria-pressed',touring); document.getElementById('play-t').textContent=touring?'Durdur':'Rehberli tur';
+  document.getElementById('play-ico').setAttribute('d',touring?'M4 3h3v10H4zM9 3h3v10H9z':'M4 2.5v11l9-5.5z'); }
+async function tourStep(i){
+  if(!touring) return;
+  const id=ORDER[i%ORDER.length];
+  if(mode!=='tour') await enterTour(id); else await goRoom(id);
+  tourTimer=setTimeout(()=>tourStep(i+1),8000);
+}
+document.getElementById('play').onclick=()=>{ if(touring){stopTour();return;} touring=true; setPlay(); tourStep(Math.max(0,ORDER.indexOf(cur))+ (cur?1:0)); };
+
+// loader
+const loader=document.getElementById('loader');
+function setLoad(k,t){document.getElementById('lbar').style.width=(k*100)+'%'; if(t)document.getElementById('ltext').textContent=t;}
+function showLoader(on){loader.style.opacity=on?1:0;loader.style.pointerEvents=on?'auto':'none';}
+
+// loop
+function frame(){
+  requestAnimationFrame(frame);
+  if(mode==='tour'){
+    if(touring && !drag) lon+=0.045;
+    pCam.fov+= (fov-pCam.fov)*0.15; pCam.updateProjectionMatrix();
+    const phi=THREE.MathUtils.degToRad(90-lat), th=THREE.MathUtils.degToRad(lon);
+    // lon 0 = plan north (+Y in Blender = -Z in three), increasing clockwise
+    pCam.lookAt(Math.sin(phi)*Math.sin(th), Math.cos(phi), -Math.sin(phi)*Math.cos(th));
+    renderer.render(pScene,pCam); placeHotspots();
+  }else{ orbit.update(); renderer.render(mScene,mCam); placePins(); }
+}
+addEventListener('resize',()=>{fov=baseFov();renderer.setSize(innerWidth,innerHeight);for(const c of [pCam,mCam]){c.aspect=innerWidth/innerHeight;c.updateProjectionMatrix();}});
+addEventListener('keydown',e=>{ if(mode!=='tour')return; if(e.key==='ArrowLeft')lon-=5; if(e.key==='ArrowRight')lon+=5; if(e.key==='ArrowUp')lat=Math.min(85,lat+5); if(e.key==='ArrowDown')lat=Math.max(-85,lat-5); });
+
+// boot
+setLoad(.2);
+const start=(location.hash.slice(1) in byId)?location.hash.slice(1):'salon';
+loadTex(start).then(async()=>{ setLoad(1); lon=byId[start].look??-byId[start].yaw; await goRoom(start,{keepView:true}); showLoader(false); frame(); })
+ .catch(()=>{ setLoad(1,'Görüntü yüklenemedi. Bağlantıyı kontrol edip sayfayı yenileyin.'); });
+</script>
+
+</body>
+</html>
