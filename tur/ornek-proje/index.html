@@ -46,7 +46,8 @@ h1,h2{font-family:var(--f-display);font-weight:700;margin:0;text-wrap:balance;li
 .proje-card p{margin:0;font-size:13.5px;line-height:1.5;color:#ddd3c3}
 .facts{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
 .facts span{font-size:12px;padding:5px 9px;border-radius:999px;border:1px solid var(--line);font-variant-numeric:tabular-nums}
-.cta{align-self:flex-start;margin-top:4px;padding:10px 14px;border-radius:999px;background:var(--trav);color:var(--trav-ink);font-weight:600;font-size:13px}
+.cta.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.cta{display:inline-block;align-self:flex-start;margin-top:4px;padding:10px 14px;border-radius:999px;background:var(--trav);color:var(--trav-ink);font-weight:600;font-size:13px}
 .shots{position:absolute;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;padding:6px}
 .shots button{width:96px;border-radius:9px;overflow:hidden;border:2px solid transparent;padding:0;position:relative}
 .shots button img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
@@ -146,8 +147,8 @@ h1,h2{font-family:var(--f-display);font-weight:700;margin:0;text-wrap:balance;li
     <div class="eyebrow">Örnek proje</div>
     <h1>Bahçeye bakan 2+1</h1>
     <p>Zemin üstü üç normal katlı, traverten cepheli konut. Her normal katta iki daire; burada arka bahçe dairesini geziyorsunuz.</p>
-    <div class="facts"><span>2+1</span><span>≈69 m² net</span><span>7 oda render'ı</span><span>360° tur</span></div>
-    <button class="cta" data-go="plan">Daireyi incele</button>
+    <div class="facts"><span>2+1</span><span>≈69 m² net</span><span>7 oda render'ı</span><span>İçinde yürünebilir tur</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="cta" href="../ornek-daire/">İçeride yürüyün</a><button class="cta ghost" data-go="plan">Planı incele</button></div>
   </div>
   <div class="shots glass" role="group" aria-label="Dış görünüşler">
     <button data-ext="sokak" aria-pressed="true"><img src="img/th_sokak.jpg" alt=""><span>Sokak</span></button>
@@ -182,7 +183,7 @@ h1,h2{font-family:var(--f-display);font-weight:700;margin:0;text-wrap:balance;li
   <button class="arrow r glass" id="o-next" aria-label="Sonraki oda"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 4l6 6-6 6"/></svg></button>
   <div class="oda-bar">
     <button class="pill solid" id="o-play" aria-pressed="false"><svg viewBox="0 0 16 16" fill="currentColor"><path id="o-play-ico" d="M4 2.5v11l9-5.5z"/></svg><span id="o-play-t">Otomatik tur</span></button>
-    <a class="pill ghost" id="o-360" href="../ornek-daire/"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><ellipse cx="8" cy="8" rx="2.6" ry="6"/></svg>360° gez</a>
+    <a class="pill ghost" id="o-360" href="../ornek-daire/"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><ellipse cx="8" cy="8" rx="2.6" ry="6"/></svg>İçeride yürü</a>
     <div class="strip" id="ostrip"></div>
   </div>
 </section>
@@ -205,7 +206,7 @@ const ROOMS=[
   text:'Çocuk ya da çalışma odası olarak kullanılabilir; bahçe cephesinde.'},
  {id:'banyo',n:6,name:'Banyo',sub:'',m2:'4,25 m²',x:-1.2,y:13.3,c:[90,62],img:'banyo',p360:'banyo',
   text:'Duşlu banyo.'},
- {id:'balkon',n:7,name:'Balkon',sub:'360° turda',m2:'8,36 m²',x:-12.1,y:14.2,c:[13,70],img:null,p360:'balkon',
+ {id:'balkon',n:7,name:'Balkon',sub:'yürüyüş turunda',m2:'8,36 m²',x:-12.1,y:14.2,c:[13,70],img:null,p360:'balkon',
   text:'Salondan çıkılan balkon.'},
 ];
 const byId=Object.fromEntries(ROOMS.map(r=>[r.id,r]));
@@ -273,7 +274,7 @@ const rlist=document.getElementById('rlist'); const listed=new Set();
 for(const r of ROOMS){
   if(listed.has(r.n)) continue; listed.add(r.n);
   const b=document.createElement('button'); b.className='ritem'; b.dataset.n=r.n;
-  b.innerHTML=`<span class="n">${r.n}</span><span><b>${r.name}</b><small>${r.m2}${r.id==='balkon'?' · yalnız 360°':''}</small></span><img src="img/th_${r.img||'balkon'}.jpg" alt="" loading="lazy">`;
+  b.innerHTML=`<span class="n">${r.n}</span><span><b>${r.name}</b><small>${r.m2}${r.id==='balkon'?' · yürüyüş turunda':''}</small></span><img src="img/th_${r.img||'balkon'}.jpg" alt="" loading="lazy">`;
   b.onclick=()=>goRoom(r.id); b.onmouseenter=()=>hl(r.n,true); b.onmouseleave=()=>hl(r.n,false);
   rlist.appendChild(b);
 }
