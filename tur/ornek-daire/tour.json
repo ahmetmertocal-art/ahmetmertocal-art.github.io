@@ -124,6 +124,41 @@
    "y": 15.6,
    "yaw": 180.0,
    "room": "balkon"
+  },
+  {
+   "id": "salon4",
+   "x": -10.0,
+   "y": 16.3,
+   "yaw": 90.0,
+   "room": "salon"
+  },
+  {
+   "id": "salon5",
+   "x": -7.3,
+   "y": 14.5,
+   "yaw": 270.0,
+   "room": "salon"
+  },
+  {
+   "id": "mutfak3",
+   "x": -4.6,
+   "y": 11.2,
+   "yaw": 270.0,
+   "room": "mutfak"
+  },
+  {
+   "id": "yatak2d",
+   "x": -2.5,
+   "y": 16.9,
+   "yaw": 180.0,
+   "room": "yatak2"
+  },
+  {
+   "id": "balkon3",
+   "x": -11.6,
+   "y": 14.5,
+   "yaw": 0.0,
+   "room": "balkon"
   }
  ],
  "rooms": [
@@ -259,5 +294,6 @@
    "pause": 1.5
   }
  ],
- "model": "daire_walk.glb"
+ "model": "daire_walk.glb",
+ "mobile": true
 }

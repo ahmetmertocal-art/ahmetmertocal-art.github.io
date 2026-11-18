@@ -7,6 +7,7 @@
 <title>Örnek Proje · NAKKAŞHÂNE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <style>
 /* Layout: one full-bleed stage per view (proje, plan, oda); glass chrome on top. Single dark look on purpose. */
 :root{
@@ -105,6 +106,50 @@ h1,h2{font-family:var(--f-display);font-weight:700;margin:0;text-wrap:balance;li
 .strip button[aria-current="true"]{border-color:var(--trav);color:var(--trav)}
 .count{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:calc(84px + env(safe-area-inset-top,0px));font-size:12px;padding:6px 10px;font-variant-numeric:tabular-nums}
 
+
+/* PROJE controls: view mode, time of day, season, floor */
+.ctrl{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:calc(76px + env(safe-area-inset-top,0px));padding:12px 14px;display:flex;flex-direction:column;gap:11px;width:min(300px,calc(100% - 32px))}
+.ctrl .row{display:flex;flex-direction:column;gap:6px}
+.ctrl .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);font-weight:600;display:flex;justify-content:space-between}
+.ctrl .lbl em{font-style:normal;letter-spacing:0;text-transform:none;color:var(--trav)}
+.ctrl .seg{align-self:flex-start;flex-wrap:wrap}
+.ctrl .row.off{opacity:.38;pointer-events:none}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(90deg,#e9d8b4,#d98c5f 50%,#2b3a63)}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:linear-gradient(90deg,#e9d8b4,#d98c5f 50%,#2b3a63)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--fg);border:3px solid var(--ink);margin-top:-9px;box-shadow:0 0 0 1px var(--line)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--fg);border:3px solid var(--ink)}
+.ticks{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mute);margin-top:-4px}
+.ticks button{padding:2px 0;font-size:11.5px;color:var(--mute)}
+.ticks button.on{color:var(--fg)}
+#ext image.lay{transition:opacity .45s}
+.unit{fill:rgba(217,195,160,0);stroke:rgba(243,237,227,0);stroke-width:3;transition:fill .25s,stroke .25s;cursor:pointer;stroke-linejoin:round}
+.unit:hover,.unit.on{fill:rgba(217,195,160,.22);stroke:rgba(243,237,227,.95)}
+.unit.sample.pulse{fill:rgba(217,195,160,.18);stroke:rgba(243,237,227,.9);stroke-dasharray:10 8}
+.ulabel{position:absolute;transform:translate(-50%,-100%);pointer-events:none;padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap}
+.floorcard{position:absolute;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));padding:14px 16px;width:min(360px,calc(100% - 32px));display:flex;flex-direction:column;gap:9px}
+.floorcard h2{font-size:24px}
+.floorcard .u{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 10px;border-radius:11px;border:1px solid var(--line)}
+.floorcard .u b{display:block;font-size:14px}.floorcard .u small{color:var(--mute);font-size:12px}
+.floorcard .x{position:absolute;right:8px;top:6px;width:30px;height:30px;border-radius:50%;color:var(--mute);font-size:18px}
+#c3d{position:absolute;inset:0;width:100%;height:100%;display:block;background:radial-gradient(ellipse at 50% 35%,#2a2620,#0f0e0c 70%)}
+.hint3d{position:absolute;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font-size:12px;padding:6px 12px;white-space:nowrap}
+/* ODA: material packages */
+.packs{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:calc(124px + env(safe-area-inset-top,0px));padding:10px 12px;display:flex;flex-direction:column;gap:8px;width:min(260px,calc(100% - 32px))}
+.packs .opts{display:flex;flex-direction:column;gap:5px}
+.packs .opts button{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:10px;border:1px solid var(--line);text-align:left;font-size:12.5px}
+.packs .opts button[aria-pressed="true"]{border-color:var(--trav);background:rgba(217,195,160,.1)}
+.packs .sw{display:flex;gap:3px;flex:none}.packs .sw i{width:12px;height:22px;border-radius:3px;display:block;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.packs .k{font-weight:700;color:var(--trav);width:14px}
+.packs .cmp{align-self:flex-start;font-size:12.5px;padding:7px 11px;border-radius:999px;border:1px solid var(--line)}
+.packs .cmp[aria-pressed="true"]{background:var(--trav);color:var(--trav-ink);border-color:var(--trav)}
+#v-oda .shot .wipe{position:absolute;inset:0;pointer-events:none}
+#v-oda .shot .wipe img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.handle{position:absolute;top:0;bottom:0;width:44px;margin-left:-22px;cursor:ew-resize;touch-action:none;z-index:2}
+.handle::before{content:"";position:absolute;left:21px;top:0;bottom:0;width:2px;background:var(--fg);box-shadow:0 0 8px rgba(0,0,0,.5)}
+.handle span{position:absolute;left:4px;top:50%;width:36px;height:36px;margin-top:-18px;border-radius:50%;background:var(--fg);color:var(--ink);display:grid;place-items:center;font-weight:700;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.wtag{position:absolute;top:calc(50% + 30px);font-size:11.5px;font-weight:600;padding:5px 9px;white-space:nowrap;z-index:2}
+
 @media (max-width:820px){
   #v-plan{grid-template-columns:1fr;grid-template-rows:minmax(0,1.1fr) minmax(0,1fr);overflow:hidden}
   .shots button{width:72px}
@@ -116,12 +161,41 @@ h1,h2{font-family:var(--f-display);font-weight:700;margin:0;text-wrap:balance;li
   .minimap{width:128px;bottom:calc(70px + env(safe-area-inset-bottom,0px))}
   .arrow{display:none}
   .tapnote{font-size:11px}
+  .ctrl{top:calc(66px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));width:auto;flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:7px 10px}
+  .ctrl .row{flex-direction:row;align-items:center;gap:6px}
+  .ctrl .lbl{display:none}.ctrl .lbl.k{display:block;font-size:10.5px;letter-spacing:.08em}
+  .ctrl #r-time{order:5;flex-basis:100%;flex-direction:column;align-items:stretch;gap:0}
+  .ctrl .seg button{padding:5px 9px;font-size:12px}
+  .ticks{margin-top:-6px}
+  .proje-card p,.proje-card .facts{display:none}
+  .proje-card,.floorcard{bottom:calc(84px + env(safe-area-inset-bottom,0px));padding:12px 14px}
+  .floorcard h2{font-size:20px}.floorcard .u{padding:7px 9px}
+  #v-proje .tapnote{display:none}
+  .hint3d{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+  .packs{top:auto;bottom:calc(70px + env(safe-area-inset-bottom,0px));right:max(16px,env(safe-area-inset-right,0px));width:auto}
+  .packs .opts{flex-direction:row}.packs .opts button span.t{display:none}
 }
 @media (orientation:portrait) and (max-width:820px){
   #v-oda .shot img{object-fit:contain}
+  #v-oda .minimap{display:none}
 }
 @media not ((orientation:portrait) and (max-width:820px)){.rot{display:none}}
 .rot{position:absolute;left:0;right:0;top:calc(50% + 31vw);text-align:center;font-size:12px;color:var(--mute)}
+@media (max-height:520px){ /* phones held sideways */
+  header{top:calc(8px + env(safe-area-inset-top,0px))}
+  .brand span{display:none}
+  .oda-title{top:calc(60px + env(safe-area-inset-top,0px));padding:8px 12px}.oda-title h2{font-size:19px}.oda-title p{display:none}
+  .minimap{width:110px;bottom:calc(62px + env(safe-area-inset-bottom,0px))}
+  .count{top:calc(64px + env(safe-area-inset-top,0px))}
+  .packs{top:calc(100px + env(safe-area-inset-top,0px));padding:7px 9px;gap:6px;width:auto}
+  .packs>.lbl{display:none}.packs .opts{flex-direction:row}.packs .opts button span.t{display:none}
+  .oda-bar{padding-top:6px}.pill{padding:7px 11px}
+  .ctrl{top:calc(60px + env(safe-area-inset-top,0px));padding:7px 10px;gap:5px;width:250px}
+  .ctrl .lbl{display:none}.ctrl .row.more .ticks{display:none}
+  .proje-card p,.proje-card .facts{display:none}.proje-card{padding:10px 12px}.proje-card h1{font-size:20px}
+  .floorcard{padding:10px 12px;gap:6px}.floorcard h2{font-size:18px}
+  #v-proje .tapnote{display:none}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -139,10 +213,25 @@ h1,h2{font-family:var(--f-display);font-weight:700;margin:0;text-wrap:balance;li
 <!-- PROJE -->
 <section class="view" id="v-proje" aria-label="Proje">
   <svg id="ext" viewBox="0 0 2560 1440" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Binanın dış görünüşü">
-    <image id="ext-img" href="img/sokak.jpg" width="2560" height="1440" preserveAspectRatio="xMidYMid slice"/>
-    <polygon id="bld" class="bld pulse" tabindex="0" role="button" aria-label="Daire planını aç"/>
+    <g id="lays"></g>
+    <g id="units"></g>
   </svg>
-  <div class="tapnote glass">Binaya dokunun, daire planı açılsın</div>
+  <canvas id="c3d" hidden aria-label="Binanın 3B modeli; sürükleyerek çevirin"></canvas>
+  <div class="hint3d glass" id="hint3d" hidden>Sürükleyip çevirin · iki parmakla yakınlaştırın</div>
+  <div id="ulabels"></div>
+  <div class="tapnote glass" id="tapnote">Bir kata dokunun</div>
+  <div class="ctrl glass" id="ctrl">
+    <div class="row"><span class="lbl">Görünüm</span>
+      <div class="seg" role="group" aria-label="Görünüm"><button data-mode="render" aria-pressed="true">Render</button><button data-mode="maket" aria-pressed="false">Maket</button><button data-mode="3d" aria-pressed="false" hidden>3B</button></div></div>
+    <div class="row more" id="r-time"><span class="lbl">Günün saati <em id="t-name">Gündüz</em></span>
+      <input type="range" id="c-time" min="0" max="2" step="0.01" value="0" aria-label="Günün saati: gündüz, akşam, gece">
+      <div class="ticks"><button data-t="0" class="on">Gündüz</button><button data-t="1">Akşam</button><button data-t="2">Gece</button></div></div>
+    <div class="row more" id="r-season"><span class="lbl">Mevsim</span>
+      <div class="seg" role="group" aria-label="Mevsim"><button data-season="yaz" aria-pressed="true">Yaz</button><button data-season="kis" aria-pressed="false">Kış</button></div></div>
+    <div class="row"><span class="lbl k">Kat</span>
+      <div class="seg" role="group" aria-label="Kat" id="c-floor"><button data-floor="3" aria-pressed="false">3</button><button data-floor="2" aria-pressed="false">2</button><button data-floor="1" aria-pressed="false">1</button><button data-floor="0" aria-pressed="false">Zemin</button></div></div>
+  </div>
+  <div class="floorcard glass" id="floorcard" hidden></div>
   <div class="proje-card glass">
     <div class="eyebrow">Örnek proje</div>
     <h1>Bahçeye bakan 2+1</h1>
@@ -174,7 +263,12 @@ h1,h2{font-family:var(--f-display);font-weight:700;margin:0;text-wrap:balance;li
 
 <!-- ODA -->
 <section class="view" id="v-oda" aria-label="Oda görselleri" hidden>
-  <div class="shot"><img id="oimg-a" alt=""><img id="oimg-b" alt="" style="opacity:0"></div>
+  <div class="shot" id="oshot"><img id="oimg-a" alt=""><img id="oimg-b" alt="" style="opacity:0">
+    <div class="wipe" id="wipe" hidden><img id="wimg" alt=""></div>
+    <div class="handle" id="handle" hidden role="slider" aria-label="Karşılaştırma çizgisi" tabindex="0"><span>⇆</span></div>
+    <div class="wtag glass" id="wtag-l" hidden></div><div class="wtag glass" id="wtag-r" hidden></div></div>
+  <div class="packs glass" id="packs" hidden><span class="lbl" style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);font-weight:600">Malzeme paketi</span>
+    <div class="opts" id="popts"></div><button class="cmp" id="pcmp" aria-pressed="false">Karşılaştır</button></div>
   <div class="oda-title glass"><div class="eyebrow" id="o-n"></div><h2 id="o-name"></h2><div class="m2" id="o-m2"></div><p id="o-text"></p></div>
   <div class="count glass" id="o-count"></div>
   <div class="rot">Daha büyük görmek için telefonu yan çevirin</div>
@@ -212,12 +306,6 @@ const ROOMS=[
 const byId=Object.fromEntries(ROOMS.map(r=>[r.id,r]));
 const renkPos=r=>[(r.x-B.x0)/(B.x1-B.x0)*100,(B.y1-r.y)/(B.y1-B.y0)*100];
 
-// building outlines in the 2560x1440 exterior frames
-const BLD={
- sokak:[[762,708],[794,640],[1124,326],[1163,239],[1670,250],[1675,1092],[1643,1092],[1643,1365],[794,1365],[794,1110]],
- bahce:[[273,0],[1707,0],[1894,299],[1894,1067],[1707,1195],[1707,1440],[416,1440],[416,1163],[273,1163]],
-};
-
 // ---------- routing ----------
 const views={proje:document.getElementById('v-proje'),plan:document.getElementById('v-plan'),oda:document.getElementById('v-oda')};
 let curRoom='salon_yasam';
@@ -237,15 +325,105 @@ document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=
   const g=b.dataset.go; location.hash = g==='oda' ? 'oda-'+curRoom : g; }));
 
 // ---------- proje ----------
-let ext='sokak';
-const extImg=document.getElementById('ext-img'), bld=document.getElementById('bld');
-function setExt(k){ ext=k; extImg.setAttribute('href','img/'+k+'.jpg'); bld.setAttribute('points',BLD[k].map(p=>p.join(',')).join(' '));
+// Each exterior view has the same camera rendered five ways (gündüz, akşam, gece, kış, maket); the time
+// slider cross-fades day -> dusk -> night. Floor outlines come from the 3D model projected through the
+// render camera (img/ext/<view>_polys.json), so they sit exactly on the facade.
+const VARS=['gunduz','aksam','gece','kis','maket'];
+const FLOORS={0:'Zemin kat',1:'1. kat',2:'2. kat',3:'3. kat'};
+const SAMPLE_FLOOR=2;   // the modelled apartment
+const ST={view:'sokak',mode:'render',t:0,season:'yaz',floor:null,have:{},polys:{}};
+const NS='http://www.w3.org/2000/svg', lays=document.getElementById('lays'), unitsG=document.getElementById('units');
+const L={};
+for(const v of ['sokak','bahce']){ L[v]={}; ST.have[v]={};
+  for(const k of VARS){ const im=document.createElementNS(NS,'image'); im.setAttribute('class','lay'); im.setAttribute('width',2560); im.setAttribute('height',1440);
+    im.setAttribute('preserveAspectRatio','xMidYMid slice'); im.style.opacity=0; im.dataset.src=`img/ext/${v}_${k}.jpg`; lays.appendChild(im); L[v][k]=im;
+    const probe=new Image(); probe.onload=()=>{ ST.have[v][k]=true; if(v===ST.view) paint(); }; probe.onerror=()=>{ ST.have[v][k]=false; paint(); };
+    probe.src=im.dataset.src; }
+  fetch(`img/ext/${v}_polys.json`).then(r=>r.ok?r.json():null).then(j=>{ ST.polys[v]=j; if(v===ST.view) drawUnits(); }).catch(()=>{});
+}
+function ensure(im){ if(!im.getAttribute('href')) im.setAttribute('href',im.dataset.src); }
+function paint(){
+  const h=ST.have[ST.view], set={};
+  for(const k of VARS) set[k]=0;
+  const base=h.gunduz?'gunduz':null;
+  if(ST.mode==='maket' && h.maket) set.maket=1;
+  else if(ST.season==='kis' && h.kis) set.kis=1;
+  else { if(base) set.gunduz=1; if(h.aksam) set.aksam=Math.min(1,Math.max(0,ST.t)); if(h.gece) set.gece=Math.min(1,Math.max(0,ST.t-1)); }
+  for(const v in L) for(const k of VARS){ const im=L[v][k], o=v===ST.view?set[k]:0; if(o>0) ensure(im); im.style.opacity=o; }
+  // order: day under dusk under night; winter and model on top when active
+  document.getElementById('r-time').classList.toggle('off', ST.mode!=='render' || ST.season==='kis' || !h.aksam);
+  document.getElementById('r-season').classList.toggle('off', ST.mode!=='render' || !h.kis);
+  document.querySelector('[data-mode="maket"]').disabled=!h.maket;
+  const nm=ST.t<0.5?'Gündüz':ST.t<1.5?'Akşam':'Gece';
+  document.getElementById('t-name').textContent=ST.season==='kis'?'kışın gündüz':nm;
+  document.querySelectorAll('.ticks button').forEach(b=>b.classList.toggle('on',Math.abs(+b.dataset.t-ST.t)<0.5));
+}
+function hull(pts){ pts=[...pts].sort((a,b)=>a[0]-b[0]||a[1]-b[1]); const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+  const lo=[],hi=[]; for(const p of pts){ while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0) lo.pop(); lo.push(p); }
+  for(const p of pts.reverse()){ while(hi.length>1&&cr(hi[hi.length-2],hi[hi.length-1],p)<=0) hi.pop(); hi.push(p); } return lo.slice(0,-1).concat(hi.slice(0,-1)); }
+function floorPolys(){ // one outline per floor = hull of its two flats
+  const j=ST.polys[ST.view]; if(!j) return {};
+  if(j.floors){ const o={}; for(const f in j.floors) o[f]=j.floors[f].map(([x,y])=>[x*2560,y*1440]); return o; }
+  const by={}; for(const u of j.units){ const f=+u.id.match(/^k(\d)/)[1]; (by[f]=by[f]||[]).push(...u.points); }
+  const out={}; for(const f in by) out[f]=hull(by[f]).map(([x,y])=>[x*2560,y*1440]); return out;
+}
+function drawUnits(){
+  unitsG.innerHTML=''; const fp=floorPolys();
+  for(const f in fp){ const pg=document.createElementNS(NS,'polygon'); pg.setAttribute('points',fp[f].map(p=>p.map(Math.round).join(',')).join(' '));
+    pg.setAttribute('class','unit'+(+f===SAMPLE_FLOOR?' sample pulse':'')); pg.dataset.floor=f; pg.setAttribute('tabindex',0); pg.setAttribute('role','button');
+    pg.setAttribute('aria-label',FLOORS[f]+' bilgisini aç');
+    pg.onclick=()=>selectFloor(+f); pg.onkeydown=e=>{if(e.key==='Enter'||e.key===' ')selectFloor(+f)};
+    pg.onmouseenter=()=>labelFloor(+f,true); pg.onmouseleave=()=>labelFloor(+f,false);
+    unitsG.appendChild(pg); }
+  markFloor();
+  setTimeout(()=>unitsG.querySelectorAll('.pulse').forEach(e=>e.classList.remove('pulse')),4500);
+}
+// screen position of an SVG point under preserveAspectRatio slice
+function toScreen(x,y){ const r=document.getElementById('ext').getBoundingClientRect(); const s=Math.max(r.width/2560,r.height/1440);
+  return [r.left+(r.width-2560*s)/2+x*s, r.top+(r.height-1440*s)/2+y*s]; }
+const ulabels=document.getElementById('ulabels');
+function labelFloor(f,on){ ulabels.innerHTML=''; if(!on||ST.mode==='3d') return; const fp=floorPolys()[f]; if(!fp) return;
+  const top=fp.reduce((a,p)=>p[1]<a[1]?p:a), cx=fp.reduce((s,p)=>s+p[0],0)/fp.length; const [x,y]=toScreen(cx,top[1]);
+  const d=document.createElement('div'); d.className='ulabel glass'; d.textContent=FLOORS[f]+(f===SAMPLE_FLOOR?' · örnek daire':''); d.style.left=x+'px'; d.style.top=(y-8)+'px'; ulabels.appendChild(d); }
+function markFloor(){
+  unitsG.querySelectorAll('.unit').forEach(e=>e.classList.toggle('on',+e.dataset.floor===ST.floor));
+  document.querySelectorAll('[data-floor]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.floor===ST.floor));
+  if(window.__bld3d) window.__bld3d.floor(ST.floor);
+}
+const fc=document.getElementById('floorcard'), pcard=document.querySelector('.proje-card');
+function selectFloor(f){
+  ST.floor=(ST.floor===f)?null:f; markFloor(); labelFloor(f,false);
+  if(ST.floor===null){ fc.hidden=true; pcard.hidden=false; return; }
+  const normal=f>=1;
+  fc.innerHTML=`<button class="x" aria-label="Kapat">×</button><div class="eyebrow">${normal?'Normal kat · iki daire':'Zemin kat'}</div><h2>${FLOORS[f]}</h2>`+
+    (normal?`<div class="u"><span><b>Arka daire · 2+1</b><small>≈69 m² net · bahçe cephesi</small></span><button class="cta" data-go-plan>Planı aç</button></div>
+    <div class="u"><span><b>Ön daire · 2+1</b><small>sokak cephesi · bu tanıtımda arka daire örneklendi</small></span></div>`
+    :`<div class="u"><span><b>Zemin kat</b><small>ayrı plan · bu tanıtımda normal kat örneklendi</small></span></div>`);
+  fc.querySelector('.x').onclick=()=>selectFloor(f);
+  const g=fc.querySelector('[data-go-plan]'); if(g) g.onclick=()=>location.hash='plan';
+  fc.hidden=false; pcard.hidden=true;
+}
+document.querySelectorAll('[data-floor]').forEach(b=>b.onclick=()=>selectFloor(+b.dataset.floor));
+const tIn=document.getElementById('c-time');
+tIn.addEventListener('input',()=>{ ST.t=+tIn.value; paint(); });
+tIn.addEventListener('change',()=>{ ST.t=Math.round(ST.t); tIn.value=ST.t; paint(); });   // settle on a real render
+document.querySelectorAll('.ticks button').forEach(b=>b.onclick=()=>{ ST.t=+b.dataset.t; tIn.value=ST.t; paint(); });
+document.querySelectorAll('[data-season]').forEach(b=>b.onclick=()=>{ ST.season=b.dataset.season;
+  document.querySelectorAll('[data-season]').forEach(x=>x.setAttribute('aria-pressed',x===b)); paint(); });
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode3(b.dataset.mode));
+function setMode3(m){ ST.mode=m; document.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.mode===m));
+  const is3=m==='3d'; document.getElementById('ext').style.visibility=is3?'hidden':'visible'; document.getElementById('c3d').hidden=!is3;
+  document.getElementById('hint3d').hidden=!is3; document.getElementById('tapnote').hidden=is3; document.querySelector('.shots').style.visibility=is3?'hidden':'visible';
+  if(is3) load3d(); paint(); }
+function setExt(k){ ST.view=k; paint(); drawUnits();
   document.querySelectorAll('[data-ext]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.ext===k)); }
 document.querySelectorAll('[data-ext]').forEach(b=>b.onclick=()=>setExt(b.dataset.ext));
-bld.addEventListener('click',()=>location.hash='plan');
-bld.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')location.hash='plan'});
-setTimeout(()=>bld.classList.remove('pulse'),4000);
+setTimeout(()=>document.getElementById('tapnote').style.opacity=0,6000);
 setExt('sokak');
+
+// ---------- 3B bina (lazy) ----------
+let loading3d=null;
+function load3d(){ if(loading3d) return loading3d; loading3d=import('./bina3d.js').then(m=>m.start(document.getElementById('c3d'),{floor:ST.floor,onFloor:selectFloor})); return loading3d; }
 
 // ---------- plan ----------
 let planKind='renk';
@@ -281,19 +459,58 @@ for(const r of ROOMS){
 rlist.insertAdjacentHTML('beforeend','<div class="total">Yaklaşık 69 m² net kullanım alanı. Alanlar onaylı kat planından alınmıştır; görseller stüdyonun render motoruyla bu plana göre kurulan modelden çekilmiştir.</div>');
 setPlan('renk');
 
+// ---------- malzeme paketleri ----------
+// Same camera rendered with three finish packages; images stack exactly, so the wipe compares like for like.
+const PACKS=[{k:'A',name:'Doğal meşe · sıcak beyaz',sw:['#c9a57a','#efe9df','#e7dccb']},
+             {k:'B',name:'Ceviz · bej duvar · zeytin',sw:['#6b4a2f','#cdbb9f','#5a6146']},
+             {k:'C',name:'Gri meşe · açık gri · antrasit',sw:['#b7b0a6','#d9dadb','#3a3b3e']}];
+let pack='A', cmp=false, wipeX=0.5, packOk={};
+const popts=document.getElementById('popts');
+for(const p of PACKS){ const b=document.createElement('button'); b.dataset.pack=p.k; b.setAttribute('aria-pressed',p.k===pack);
+  b.innerHTML=`<span class="k">${p.k}</span><span class="sw">${p.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><span class="t">${p.name}</span>`;
+  b.onclick=()=>{ pack=p.k; popts.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b)); openRoom(curRoom); }; popts.appendChild(b); }
+const otherPack=()=>PACKS[(PACKS.findIndex(p=>p.k===pack)+1)%PACKS.length].k;
+const roomSrc=(r,k)=>packOk[r.id]?`img/oda/${r.img}_${k}.jpg`:'img/'+r.img+'.jpg';
+document.getElementById('pcmp').onclick=e=>{ cmp=!cmp; e.currentTarget.setAttribute('aria-pressed',cmp); layoutWipe(); };
+const wipe=document.getElementById('wipe'), wimg=document.getElementById('wimg'), handle=document.getElementById('handle');
+function layoutWipe(){
+  const r=byId[curRoom], on=cmp&&packOk[curRoom];
+  wipe.hidden=handle.hidden=!on; document.getElementById('wtag-l').hidden=document.getElementById('wtag-r').hidden=!on;
+  if(!on) return;
+  const o=otherPack(); wimg.src=roomSrc(r,o);
+  wipe.style.clipPath=`inset(0 0 0 ${wipeX*100}%)`; handle.style.left=(wipeX*100)+'%';
+  const tl=document.getElementById('wtag-l'), tr=document.getElementById('wtag-r');
+  tl.textContent=pack+' · '+PACKS.find(p=>p.k===pack).name.split(' · ')[0]; tr.textContent=o+' · '+PACKS.find(p=>p.k===o).name.split(' · ')[0];
+  tl.style.right=`calc(${100-wipeX*100}% + 28px)`; tl.style.left='auto'; tr.style.left=`calc(${wipeX*100}% + 28px)`;
+}
+let drag=false;
+handle.addEventListener('pointerdown',e=>{drag=true;handle.setPointerCapture(e.pointerId);e.stopPropagation();});
+handle.addEventListener('pointermove',e=>{ if(!drag) return; const R=document.getElementById('oshot').getBoundingClientRect(); wipeX=Math.min(.97,Math.max(.03,(e.clientX-R.left)/R.width)); layoutWipe(); });
+handle.addEventListener('pointerup',()=>drag=false);
+handle.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft'){wipeX=Math.max(.03,wipeX-.05);layoutWipe();} if(e.key==='ArrowRight'){wipeX=Math.min(.97,wipeX+.05);layoutWipe();} });
+handle.addEventListener('touchstart',e=>e.stopPropagation(),{passive:true}); handle.addEventListener('touchend',e=>e.stopPropagation(),{passive:true});
+// which rooms have all three packages
+for(const r of ROOMS) if(r.img){ let n=0; for(const p of PACKS){ const im=new Image(); im.onload=()=>{ if(++n===PACKS.length){ packOk[r.id]=true; if(curRoom===r.id&&!views.oda.hidden) openRoom(r.id); } }; im.src=`img/oda/${r.img}_${p.k}.jpg`; } }
+
 // ---------- oda ----------
 const SEQ=ROOMS.filter(r=>r.img);
 const A=document.getElementById('oimg-a'), Bm=document.getElementById('oimg-b'); let front=A;
 const ostrip=document.getElementById('ostrip');
 for(const r of SEQ){ const b=document.createElement('button'); b.dataset.id=r.id; b.textContent=r.sub&&r.n===1?r.sub:r.name; b.onclick=()=>{stopPlay();goRoom(r.id)}; ostrip.appendChild(b); }
+let imgTok=0;
+function setRoomImage(src,alt){
+  if(front.getAttribute('src')===src && front.style.opacity==='1') return;
+  const tok=++imgTok, back=front===A?Bm:A; back.onload=null; back.alt=alt;
+  const done=()=>{ if(tok!==imgTok) return; back.style.opacity=1; front.style.opacity=0; front=back; };
+  back.src=src; if(back.complete&&back.naturalWidth) done(); else back.onload=done;
+}
 function goRoom(id){ location.hash='oda-'+id; }
 function openRoom(id,fromHash){
   const r=byId[id];
   if(!r.img){ location.href='../ornek-daire/#'+r.p360; return; }
   show('oda'); curRoom=id;
-  const back=front===A?Bm:A; back.src='img/'+r.img+'.jpg'; back.alt=r.name+(r.sub?' · '+r.sub:'');
-  const swap=()=>{ back.style.opacity=1; front.style.opacity=0; front=back; };
-  back.complete?swap():back.onload=swap;
+  setRoomImage(roomSrc(r,pack), r.name+(r.sub?' · '+r.sub:''));
+  document.getElementById('packs').hidden=!packOk[id]; layoutWipe();
   document.getElementById('o-n').textContent=String(r.n).padStart(2,'0')+(r.sub?' · '+r.sub:'');
   document.getElementById('o-name').textContent=r.name;
   document.getElementById('o-m2').textContent=r.m2;
@@ -302,7 +519,7 @@ function openRoom(id,fromHash){
   const [l,t]=renkPos(r); const d=document.getElementById('o-dot'); d.style.left=l+'%'; d.style.top=t+'%';
   document.getElementById('o-360').href='../ornek-daire/#'+r.p360;
   ostrip.querySelectorAll('button').forEach(b=>{const on=b.dataset.id===id;b.setAttribute('aria-current',on);if(on)b.scrollIntoView({inline:'nearest',block:'nearest'});});
-  const nx=SEQ[(i+1)%SEQ.length]; new Image().src='img/'+nx.img+'.jpg';
+  const nx=SEQ[(i+1)%SEQ.length]; new Image().src=roomSrc(nx,pack);
 }
 const step=d=>{const i=SEQ.indexOf(byId[curRoom]); goRoom(SEQ[(i+d+SEQ.length)%SEQ.length].id);};
 document.getElementById('o-prev').onclick=()=>{stopPlay();step(-1)};
@@ -319,5 +536,6 @@ document.getElementById('o-play').onclick=()=>{ if(timer){stopPlay();return;} se
 
 route();
 </script>
+<script>fetch('img/bina.glb',{method:'HEAD'}).then(r=>{if(r.ok)document.querySelector('[data-mode="3d"]').hidden=false}).catch(()=>{});</script>
 </body>
 </html>
