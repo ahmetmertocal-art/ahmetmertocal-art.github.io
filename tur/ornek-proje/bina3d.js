@@ -19,20 +19,29 @@ export async function start(canvas, opt) {
   const dl = new DRACOLoader(); dl.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
   const gl = new GLTFLoader(); gl.setDRACOLoader(dl);
   const g = await gl.loadAsync('img/bina.glb');
-  const bb = new THREE.Box3().setFromObject(g.scene), bc = bb.getCenter(new THREE.Vector3()), bs = bb.getSize(new THREE.Vector3());
+  // The export can carry merged meshes that reach into the neighbours; bounds and view come from the building's own box
+  // (BINA collection, blender x -12.32..0.02, y -1.14..18.01, z 0.15..15.55) and everything outside it is clipped away.
+  const M = 1.6, X0 = -12.32 - M, X1 = 0.02 + M, Z0 = -18.01 - M, Z1 = 1.14 + M, Y0 = 0.15, Y1 = 15.55 + 1.2;
+  const clip = [new THREE.Plane(new THREE.Vector3(1, 0, 0), -X0), new THREE.Plane(new THREE.Vector3(-1, 0, 0), X1),
+                new THREE.Plane(new THREE.Vector3(0, 0, 1), -Z0), new THREE.Plane(new THREE.Vector3(0, 0, -1), Z1),
+                new THREE.Plane(new THREE.Vector3(0, -1, 0), Y1)];
+  renderer.localClippingEnabled = true;
+  const bb = new THREE.Box3(new THREE.Vector3(X0 + M, Y0, Z0 + M), new THREE.Vector3(X1 - M, Y1 - 1.2, Z1 - M)),
+        bc = bb.getCenter(new THREE.Vector3()), bs = bb.getSize(new THREE.Vector3());
   const cx = bc.x, cz = bc.z, R = Math.max(bs.x, bs.z, bs.y);
-  const cam = new THREE.PerspectiveCamera(35, 1, 0.5, 600);
+  const cam = new THREE.PerspectiveCamera(35, 1, 0.3, 400);
   const ctl = new OrbitControls(cam, canvas); ctl.target.set(cx, bb.min.y + bs.y * 0.42, cz); ctl.enableDamping = true;
-  ctl.minDistance = R * 0.8; ctl.maxDistance = R * 5; ctl.maxPolarAngle = Math.PI * 0.49; ctl.autoRotate = true; ctl.autoRotateSpeed = 0.6;
+  ctl.minDistance = R * 0.6; ctl.maxDistance = R * 3.5; ctl.maxPolarAngle = Math.PI * 0.49; ctl.autoRotate = true; ctl.autoRotateSpeed = 0.6;
   canvas.addEventListener('pointerdown', () => { ctl.autoRotate = false; }, { once: true });
 
   const sun = new THREE.DirectionalLight(0xfff1dc, 2.4); sun.position.set(cx - R * 1.5, R * 2.2, cz + R * 1.2); sun.target.position.set(cx, 0, cz);
   sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -35, right: 35, top: 35, bottom: -35, near: 1, far: 140 });
   sun.shadow.bias = -0.0004; scene.add(sun, sun.target, new THREE.HemisphereLight(0xdfe8f2, 0x5b5246, 0.6));
-  const ground = new THREE.Mesh(new THREE.CircleGeometry(60, 64).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x8c8a80, roughness: 1 }));
+  const ground = new THREE.Mesh(new THREE.CircleGeometry(R * 1.6, 64).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x8c8a80, roughness: 1 }));
   ground.position.set(cx, bb.min.y - 0.02, cz); ground.receiveShadow = true; scene.add(ground);
 
   g.scene.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true;
+    for (const m of [].concat(o.material)) { m.clippingPlanes = clip; m.clipShadows = true; }
     if (o.material && /glass|cam/i.test(o.material.name)) { o.material.transparent = true; o.material.opacity = 0.55; o.material.color.set(0x23303a); o.material.roughness = 0.05; o.material.metalness = 0.2; o.castShadow = false; } } });
   scene.add(g.scene);
 
@@ -61,7 +70,7 @@ export async function start(canvas, opt) {
 
   let placed = false;
   function size() { const w = canvas.clientWidth, h = canvas.clientHeight; if (!w) return; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix();
-    if (!placed) { placed = true; const k = R * (w < h ? 3.1 : 1.9);   // portrait phones need more distance to fit the building
+    if (!placed) { placed = true; const k = R * (w < h ? 2.6 : 1.7);   // portrait phones need more distance to fit the building
       cam.position.set(cx + k * 0.72, ctl.target.y + k * 0.42, cz + k * 0.62); } }
   new ResizeObserver(size).observe(canvas); size();
   renderer.setAnimationLoop(() => { if (canvas.hidden) return; ctl.update(); renderer.render(scene, cam); });

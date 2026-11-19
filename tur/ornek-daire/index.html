@@ -73,9 +73,28 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--trav);outline-offse
   .mini .tag{display:none}
   .card{top:calc(68px + env(safe-area-inset-top,0px))}
   .help{font-size:11.5px;white-space:normal;width:calc(100% - 32px);text-align:center}
-  .play span{display:none}
+  .play{padding:10px 12px}.play span{font-size:12px}
+  .rooms{-webkit-mask-image:linear-gradient(to right,#000 82%,transparent);mask-image:linear-gradient(to right,#000 82%,transparent)}
   body.is-model .card{display:none}
+  .pin{font-size:11px;padding:5px 8px}
 }
+@media (max-height:520px){ /* phones held sideways */
+  .top{top:calc(8px + env(safe-area-inset-top,0px))}
+  .brand span{display:none}.brand{padding:7px 11px}
+  .modes button,.modes a{padding:6px 10px;font-size:12px}
+  .card{top:calc(56px + env(safe-area-inset-top,0px));padding:7px 11px}.card h1{font-size:17px}.card .eyebrow{display:none}
+  .mini{width:150px;top:calc(56px + env(safe-area-inset-top,0px))}.mini .tag{display:none}
+  .strip{padding-top:6px;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+  .play{padding:8px 12px}.rooms button{padding:6px 10px;font-size:12px}
+  .help{bottom:calc(56px + env(safe-area-inset-bottom,0px))}
+}
+#end{position:fixed;z-index:7;left:50%;top:50%;transform:translate(-50%,-50%);padding:20px 22px;width:min(340px,calc(100% - 32px));display:flex;flex-direction:column;gap:10px;text-align:center;transition:opacity .3s}
+#end[hidden]{display:none}
+#end h2{font-family:var(--f-display);font-size:22px;margin:0}
+#end p{margin:0;color:var(--mute);font-size:13px}
+#end .acts{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+#end .acts>*{padding:10px 14px;border-radius:999px;border:1px solid var(--line);font-size:13.5px;font-weight:600}
+#end .acts>.pri{background:var(--trav);color:var(--trav-ink);border-color:var(--trav)}
 @media (prefers-reduced-motion:reduce){#fade,.card,#loader,.help{transition:none}}
 </style>
 </head>
@@ -105,6 +124,11 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--trav);outline-offse
 <div class="strip">
   <button class="play" id="play" aria-pressed="false" aria-label="Rehberli yürüyüş"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path id="play-ico" d="M4 2.5v11l9-5.5z"/></svg><span id="play-t">Rehberli yürüyüş</span></button>
   <div class="rooms" id="rooms" role="tablist" aria-label="Odalar"></div>
+</div>
+
+<div class="glass" id="end" hidden role="dialog" aria-label="Rehberli yürüyüş bitti">
+  <h2>Daireyi gezdiniz</h2><p>Dilediğiniz odaya dönebilir, planı inceleyebilir ya da maketten bütüne bakabilirsiniz.</p>
+  <div class="acts"><a class="pri" href="../ornek-proje/#plan">Kat planını incele</a><button id="end-model">Maket görünümü</button><button id="end-again">Baştan izle</button><button id="end-close">Kendim gezeyim</button></div>
 </div>
 
 <div id="loader"><div class="box"><b>NAKKAŞHÂNE</b><div class="bar"><i id="lbar"></i></div><span id="ltext">Daire hazırlanıyor</span></div></div>
@@ -244,19 +268,21 @@ function blocked(a,b){ // line of sight at knee and chest height
   return false;
 }
 function onFloor(x,z){ ray.set(new THREE.Vector3(x,1.2,z),new THREE.Vector3(0,-1,0)); ray.far=1.5; const h=ray.intersectObjects(meshes,false)[0]; return h && h.point.y<0.25 ? h.point.y : null; }
-// shot-position graph for routing around walls
-for(const a of P){ a.nb=[]; }
-for(let i=0;i<P.length;i++) for(let j=i+1;j<P.length;j++){ const a=P[i],b=P[j]; const d=a.c.distanceTo(b.c);
+// routing graph: shot positions plus invisible waypoints at door thresholds (tour.json "waypoints", plan metres)
+const WP=(T.waypoints||[]).map((w,i)=>({id:'_w'+i, wp:true, c:new THREE.Vector3(w.x-CX, EYE, -(w.y-CY))}));
+const G=P.concat(WP);
+for(const a of G){ a.nb=[]; }
+for(let i=0;i<G.length;i++) for(let j=i+1;j<G.length;j++){ const a=G[i],b=G[j]; const d=a.c.distanceTo(b.c);
   if(d<6.5 && !blocked(a.c,b.c)){ a.nb.push([b,d]); b.nb.push([a,d]); } }
-function nearestVisible(v){ let best=null,bd=1e9; for(const p of P){ const d=p.c.distanceTo(v); if(d<bd && !blocked(v,p.c)){bd=d;best=p;} } return best; }
-function route(from,to){ // Dijkstra over the graph; returns list of Vector3 waypoints
+function nearestVisible(v){ let best=null,bd=1e9; for(const p of G){ const d=p.c.distanceTo(v); if(d<bd && !blocked(v,p.c)){bd=d;best=p;} } return best; }
+function route(from,to){ // Dijkstra over the graph; returns waypoints, or null when there is no path (caller fades instead of walking through a wall)
   if(!blocked(from,to)) return [to];
-  const s=nearestVisible(from), t=nearestVisible(to); if(!s||!t) return [to];
-  const dist=new Map([[s,0]]), prev=new Map(), q=new Set(P);
+  const s=nearestVisible(from), t=nearestVisible(to); if(!s||!t) return null;
+  const dist=new Map([[s,0]]), prev=new Map(), q=new Set(G);
   while(q.size){ let u=null,ud=1e9; for(const p of q){const d=dist.get(p)??1e9; if(d<ud){ud=d;u=p;}} if(!u||u===t) break; q.delete(u);
     for(const [v,w] of u.nb){ const nd=ud+w; if(nd<(dist.get(v)??1e9)){dist.set(v,nd);prev.set(v,u);} } }
   const path=[]; let u=t; while(u){ path.unshift(u.c); u=prev.get(u); }
-  if(path[0]!==s.c) return [to];
+  if(path[0]!==s.c) return null;
   const out=path.filter((c,i)=>!(i===0 && c.distanceTo(from)<0.05)); if(to.distanceTo(t.c)>0.05) out.push(to); return out;
 }
 
@@ -288,9 +314,16 @@ function updateSlots(dt){
 }
 
 // ---------- walking ----------
-let path=[], walking=null, autoLook=false;
-function walkTo(target,{look=true,speed=1.35}={}){
-  const t=target.clone(); t.y=EYE; path=route(pos.clone(),t); autoLook=look; walking={speed}; help(false);
+let path=[], walking=null, autoLook=false, faceTo=null, turning=null;
+function walkTo(target,{look=true,speed=1.35,face=null}={}){
+  const t=target.clone(); t.y=EYE; const r=route(pos.clone(),t); faceTo=face; turning=null; help(false);
+  if(!r){ jumpTo(t); return; }
+  path=r; autoLook=look; walking={speed};
+}
+async function jumpTo(t){ // no walkable path: short fade, then arrive
+  path=[]; walking=null; fade.style.opacity=1; await new Promise(r=>setTimeout(r,360));
+  pos.copy(t); lastSel.set(1e9,0,0); select(); await Promise.all(want.map(p=>loadPano(p.id))).catch(()=>{});
+  updateSlots(1); fade.style.opacity=0; onArrive();
 }
 function stepWalk(dt){
   if(!walking||!path.length){ walking=null; return; }
@@ -300,7 +333,8 @@ function stepWalk(dt){
   pos.addScaledVector(d.normalize(),v*dt);
   if(autoLook){ const h=THREE.MathUtils.radToDeg(Math.atan2(d.x,-d.z)); let dl=((h-lon+540)%360)-180; lon+=dl*Math.min(1,dt*3); lat+=(-4-lat)*Math.min(1,dt*2); }
 }
-function onArrive(){ updateRoom(true); if(touring) tourNext(); }
+function onArrive(){ updateRoom(true); if(faceTo!==null){ turning=faceTo; faceTo=null; } if(touring) tourNext(); }
+function stepTurn(dt){ if(turning===null) return; const dl=((turning-lon+540)%360)-180; lon+=dl*Math.min(1,dt*2.2); lat+=(-4-lat)*Math.min(1,dt*2); if(Math.abs(dl)<0.4) turning=null; }
 
 // ---------- input ----------
 let drag=null, moved=0;
@@ -318,7 +352,7 @@ stage.addEventListener('pointerdown',e=>{ drag={x:e.clientX,y:e.clientY,lon,lat}
 stage.addEventListener('pointermove',e=>{
   if(mode==='walk' && e.pointerType==='mouse' && !drag){ const h=pick(e), t=floorTarget(h); cursor.visible=!!t; if(t){cursor.position.set(t.x,0.015,t.z);} }
   if(!drag||mode!=='walk') return; moved=Math.max(moved,Math.hypot(e.clientX-drag.x,e.clientY-drag.y));
-  if(moved>4){ stage.classList.add('dragging'); stopTour(); const k=fov/innerHeight; lon=drag.lon-(e.clientX-drag.x)*k; lat=THREE.MathUtils.clamp(drag.lat+(e.clientY-drag.y)*k,-80,80); help(false); }
+  if(moved>4){ stage.classList.add('dragging'); stopTour(); turning=null; const k=fov/innerHeight; lon=drag.lon-(e.clientX-drag.x)*k; lat=THREE.MathUtils.clamp(drag.lat+(e.clientY-drag.y)*k,-80,80); help(false); }
 });
 stage.addEventListener('pointerup',e=>{ stage.classList.remove('dragging'); const was=drag; drag=null;
   if(was && moved<6 && mode==='walk'){ const t=floorTarget(pick(e)); if(t){ stopTour(); walkTo(t,{look:false}); } } });
@@ -354,7 +388,7 @@ function updateRoom(force){
 const roomsEl=document.getElementById('rooms');
 for(const R of ROOMS){ if(R.hidden) continue; const b=document.createElement('button'); b.setAttribute('role','tab'); b.dataset.id=R.id;
   b.innerHTML=`${R.name}${R.m2.includes('m²')?`<small>${R.m2.replace(' m²','')}</small>`:''}`;
-  b.onclick=()=>{ stopTour(); if(mode!=='walk') setMode('walk'); walkTo(pById[R.main].c,{look:true}); }; roomsEl.appendChild(b); }
+  b.onclick=()=>{ stopTour(); if(mode!=='walk') setMode('walk'); walkTo(pById[R.main].c,{look:true,face:R.look??null}); }; roomsEl.appendChild(b); }
 const mme=document.getElementById('mme');
 function drawMini(){ const [x,y]=toPlan(pos); mme.setAttribute('transform',`translate(${x} ${y}) rotate(${lon})`); }
 document.getElementById('mframe').addEventListener('click',e=>{
@@ -374,14 +408,23 @@ function setPlay(){ document.getElementById('play').setAttribute('aria-pressed',
   document.getElementById('play-ico').setAttribute('d',touring?'M4 3h3v10H4zM9 3h3v10H9z':'M4 2.5v11l9-5.5z'); }
 function stopTour(){ if(!touring) return; touring=false; clearTimeout(tourWait); panning=0; setPlay(); }
 let panning=0;
+const endEl=document.getElementById('end');
+function stopLook(st){ if(st.look!==undefined) return st.look; const R=rById[pById[st.at].room]; return (st.pause&&R&&R.main===st.at)?(R.look??null):null; }
 function tourNext(){
-  const st=TOUR[tourI%TOUR.length]; tourI++;
-  if(st.pause){ panning=st.pan||0; tourWait=setTimeout(()=>{panning=0; if(touring) goStep();},st.pause*1000); } else goStep();
+  const st=TOUR[tourI]; tourI++;
+  const last=tourI>=TOUR.length;
+  const go=()=>{ panning=0; if(!touring) return; if(last){ touring=false; setPlay(); endEl.hidden=false; } else goStep(); };
+  if(st.pause){ panning=st.pan||0; tourWait=setTimeout(go,st.pause*1000); } else go();
 }
-function goStep(){ const st=TOUR[tourI%TOUR.length]; walkTo(pById[st.at].c,{look:true,speed:st.speed||1.1}); }
-document.getElementById('play').onclick=()=>{ if(touring){stopTour();return;} if(mode!=='walk') setMode('walk'); touring=true; setPlay(); help(false);
-  // start from the stop nearest to where we are
-  let bi=0,bd=1e9; TOUR.forEach((s,i)=>{const d=pById[s.at].c.distanceTo(pos); if(d<bd){bd=d;bi=i;}}); tourI=bi; goStep(); };
+function goStep(){ const st=TOUR[tourI]; walkTo(pById[st.at].c,{look:true,speed:st.speed||1.1,face:stopLook(st)}); }
+function startTour(fromStart){ endEl.hidden=true; if(mode!=='walk') setMode('walk'); touring=true; setPlay(); help(false);
+  // start from the stop nearest to where we are (or from the beginning)
+  let bi=0,bd=1e9; if(!fromStart) TOUR.forEach((s,i)=>{const d=pById[s.at].c.distanceTo(pos); if(d<bd){bd=d;bi=i;}});
+  tourI=bi>=TOUR.length-1?0:bi; goStep(); }
+document.getElementById('play').onclick=()=>{ if(touring){stopTour();return;} startTour(false); };
+document.getElementById('end-again').onclick=()=>startTour(true);
+document.getElementById('end-close').onclick=()=>{ endEl.hidden=true; };
+document.getElementById('end-model').onclick=()=>{ endEl.hidden=true; setMode('model'); };
 
 // ---------- dollhouse ----------
 let mode='walk';
@@ -394,11 +437,15 @@ function buildPins(){ pins.forEach(p=>p.el.remove()); pins=[]; if(mode!=='model'
   for(const R of ROOMS){ if(R.hidden) continue; const p=pById[R.main]; const el=document.createElement('button'); el.className='pin';
     el.innerHTML=`${R.name}<small>${R.m2.includes('m²')?R.m2:''}</small>`; el.onclick=()=>{ setMode('walk',p); };
     overlay.appendChild(el); pins.push({el,v:new THREE.Vector3(p.c.x,1.1,p.c.z)}); } }
-function placePins(){ const v=new THREE.Vector3(); for(const h of pins){ v.copy(h.v).project(mCam); const vis=v.z<1; h.el.style.display=vis?'block':'none';
-  if(vis){h.el.style.left=((v.x+1)/2*innerWidth)+'px';h.el.style.top=((1-v.y)/2*innerHeight)+'px';} } }
+function placePins(){ const v=new THREE.Vector3(), boxes=[];
+  const hs=pins.map(h=>{ v.copy(h.v).project(mCam); return {h,x:(v.x+1)/2*innerWidth,y:(1-v.y)/2*innerHeight,vis:v.z<1}; }).sort((a,b)=>b.y-a.y);
+  for(const q of hs){ q.h.el.style.display=q.vis?'block':'none'; if(!q.vis) continue;
+    const w=q.h.el.offsetWidth||90, hh=q.h.el.offsetHeight||26; let x=Math.min(innerWidth-w/2-6,Math.max(w/2+6,q.x)), y=q.y;
+    for(let k=0;k<6;k++){ const hit=boxes.find(b=>Math.abs(b.x-x)<(b.w+w)/2+4 && Math.abs(b.y-y)<(b.h+hh)/2+3); if(!hit) break; y=hit.y-(hit.h+hh)/2-4; }
+    boxes.push({x,y,w,h:hh}); q.h.el.style.left=x+'px'; q.h.el.style.top=y+'px'; } }
 const fade=document.getElementById('fade');
 async function setMode(m,at){
-  stopTour(); fade.style.opacity=1; await new Promise(r=>setTimeout(r,330));
+  stopTour(); endEl.hidden=true; fade.style.opacity=1; await new Promise(r=>setTimeout(r,330));
   mode=m; orbit.enabled=m==='model'; document.body.classList.toggle('is-model',m==='model');
   document.getElementById('m-walk').setAttribute('aria-pressed',m==='walk'); document.getElementById('m-model').setAttribute('aria-pressed',m==='model');
   shared.uProj.value=m==='walk'?1:0; shared.uCut.value=m==='walk'?99:2.25; bg.visible=m==='walk'; scene.background=m==='walk'?null:new THREE.Color(0x1a1815);
@@ -413,7 +460,7 @@ let last=performance.now();
 function frame(now){ requestAnimationFrame(frame); frameOnce(now); }
 function frameOnce(now){ const dt=Math.min(0.05,(now-last)/1000); last=now;
   if(mode==='walk'){
-    stepKeys(dt); stepWalk(dt); if(panning) lon+=panning*dt;
+    stepKeys(dt); stepWalk(dt); stepTurn(dt); if(panning) lon+=panning*dt;
     updateSlots(dt); if(++roomTick%10===0) updateRoom(false);
     cam.fov+=(fov-cam.fov)*0.15; cam.updateProjectionMatrix(); cam.position.copy(pos);
     const phi=THREE.MathUtils.degToRad(90-lat), th=THREE.MathUtils.degToRad(lon);
@@ -434,7 +481,7 @@ window.TOUR_READY=true;
 const STILL=location.search.includes('still');
 if(STILL){ window._step=(n=1,dt=0.05)=>{ for(let i=0;i<n;i++){ last=performance.now()-dt*1000; frameOnce(performance.now()); } }; }
 else requestAnimationFrame(frame);
-window._dbg={pick:(x,y)=>{const h=pick({clientX:x,clientY:y}); const t=floorTarget(h); return {hit:h?[h.point.x,h.point.y,h.point.z,h.object.name]:null, t:t?[t.x,t.z]:null, fl:h?onFloor(h.point.x,h.point.z):null};},pos,P,walkTo,setMode,get lon(){return lon},set lon(v){lon=v},get lat(){return lat},set lat(v){lat=v},shared,slot};
+window._dbg={route,G,get path(){return path},get walking(){return walking},jumpTo,pick:(x,y)=>{const h=pick({clientX:x,clientY:y}); const t=floorTarget(h); return {hit:h?[h.point.x,h.point.y,h.point.z,h.object.name]:null, t:t?[t.x,t.z]:null, fl:h?onFloor(h.point.x,h.point.z):null};},pos,P,walkTo,setMode,get lon(){return lon},set lon(v){lon=v},get lat(){return lat},set lat(v){lat=v},shared,slot};
 </script>
 </body>
 </html>
