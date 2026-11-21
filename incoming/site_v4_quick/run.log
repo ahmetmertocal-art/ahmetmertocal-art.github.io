@@ -1,0 +1,194 @@
+== 2026-11-21 00:32:09 başla  APT=/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/02_source/apt_v011.blend  SOKAK=/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/02_source/ext_v023.blend  BAHCE=/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/02_source/ext_v024.blend
+== 00:32:09 tur 360 + mesafe
+00:07.553  cycles           | WARNING HIPEW initialization failed: Error opening HIP dynamic library
+CIHAZ OPTIX ['NVIDIA GeForce RTX 4090']
+CAM saydam: ['glass_arch_thin', 'guard_glass'] (3 nesne)
+RENK banyo 1024px 14s
+RENK balkon 1024px 12s
+RENK salon5 1024px 12s
+MESAFE banyo min=0.25 max=12.33 15s
+MESAFE balkon min=0.00 max=349.43 15s
+MESAFE salon5 min=0.00 max=115.42 15s
+TAMAM
+== 00:33:43 odalar paket A
+CIHAZ OPTIX ['NVIDIA GeForce RTX 4090']
+00:41.088  render           | Saved: '/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/rooms/CAM_salon_yasam_paketA.jpg'
+NK renderlog: CAM_salon_yasam 26.69 sn (hazırlık 24.42, örnek 2.27) ≈ $0.0066
+VARYANT CAM_salon_yasam paketA 640x360 27s
+01:05.914  render           | Saved: '/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/rooms/CAM_salon_yemek_paketA.jpg'
+NK renderlog: CAM_salon_yemek 24.73 sn (hazırlık 22.67, örnek 2.05) ≈ $0.0061
+VARYANT CAM_salon_yemek paketA 640x360 25s
+01:30.785  render           | Saved: '/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/rooms/CAM_hol_paketA.jpg'
+NK renderlog: CAM_hol 24.78 sn (hazırlık 22.7, örnek 2.08) ≈ $0.0061
+VARYANT CAM_hol paketA 640x360 25s
+01:55.212  render           | Saved: '/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/rooms/CAM_banyo_paketA.jpg'
+NK renderlog: CAM_banyo 24.33 sn (hazırlık 22.41, örnek 1.92) ≈ $0.006
+VARYANT CAM_banyo paketA 640x360 24s
+== 00:35:43 odalar paket B
+PAKET B tint oak_joinery (1 bsdf)
+PAKET B tint oak_joinery_vertical (1 bsdf)
+PAKET B color lacquer_cashmere (1 bsdf)
+PAKET B color lacquer_cream (1 bsdf)
+PAKET B color door_lacquer_greige (1 bsdf)
+PAKET B tint travertine_panels (1 bsdf)
+PAKET B tint travertine_slab_honed (1 bsdf)
+PAKET B tint tile_porcelain_floor (1 bsdf)
+PAKET B tint tile_porcelain_wall (1 bsdf)
+PAKET B color paint_warm_white (1 bsdf)
+PAKET B tint oak_floor_wide (1 bsdf)
+PAKET B tint Fabric.LightBrown (1 bsdf)
+PAKET B tint Fabric.DarkGray (1 bsdf)
+PAKET B tint rug_wool (1 bsdf)
+PAKET B tint Orange Cloth (1 bsdf)
+PAKET B tint Orange Pillow (1 bsdf)
+PAKET B tint blanket_sage.001_kirisik (1 bsdf)
+PAKET B tint DirtyBlanket (1 bsdf)
+CIHAZ OPTIX ['NVIDIA GeForce RTX 4090']
+00:41.379  render           | Saved: '/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/rooms/CAM_salon_yasam_paketB.jpg'
+NK renderlog: CAM_salon_yasam 26.64 sn (hazırlık 24.5, örnek 2.14) ≈ $0.0066
+VARYANT CAM_salon_yasam paketB 640x360 27s
+01:06.029  render           | Saved: '/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/rooms/CAM_salon_yemek_paketB.jpg'
+NK renderlog: CAM_salon_yemek 24.55 sn (hazırlık 22.59, örnek 1.96) ≈ $0.0061
+VARYANT CAM_salon_yemek paketB 640x360 25s
+01:31.044  render           | Saved: '/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/rooms/CAM_hol_paketB.jpg'
+NK renderlog: CAM_hol 24.91 sn (hazırlık 22.92, örnek 1.98) ≈ $0.0062
+VARYANT CAM_hol paketB 640x360 25s
+01:55.239  render           | Saved: '/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/rooms/CAM_banyo_paketB.jpg'
+NK renderlog: CAM_banyo 24.1 sn (hazırlık 22.14, örnek 1.96) ≈ $0.006
+VARYANT CAM_banyo paketB 640x360 24s
+== 00:37:42 odalar paket C
+PAKET C tint oak_joinery (1 bsdf)
+PAKET C tint oak_joinery_vertical (1 bsdf)
+PAKET C color lacquer_cashmere (1 bsdf)
+PAKET C color lacquer_cream (1 bsdf)
+PAKET C color door_lacquer_greige (1 bsdf)
+PAKET C tint travertine_panels (1 bsdf)
+PAKET C tint travertine_slab_honed (1 bsdf)
+PAKET C tint tile_porcelain_floor (1 bsdf)
+PAKET C tint tile_porcelain_wall (1 bsdf)
+PAKET C color paint_warm_white (1 bsdf)
+PAKET C tint oak_floor_wide (1 bsdf)
+PAKET C tint Fabric.LightBrown (1 bsdf)
+PAKET C tint Fabric.DarkGray (1 bsdf)
+PAKET C tint rug_wool (1 bsdf)
+PAKET C tint Orange Cloth (1 bsdf)
+PAKET C tint Orange Pillow (1 bsdf)
+PAKET C tint blanket_sage.001_kirisik (1 bsdf)
+PAKET C tint DirtyBlanket (1 bsdf)
+CIHAZ OPTIX ['NVIDIA GeForce RTX 4090']
+00:41.812  render           | Saved: '/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/rooms/CAM_salon_yasam_paketC.jpg'
+NK renderlog: CAM_salon_yasam 26.69 sn (hazırlık 24.42, örnek 2.26) ≈ $0.0066
+VARYANT CAM_salon_yasam paketC 640x360 27s
+01:07.091  render           | Saved: '/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/rooms/CAM_salon_yemek_paketC.jpg'
+NK renderlog: CAM_salon_yemek 25.19 sn (hazırlık 23.13, örnek 2.05) ≈ $0.0062
+VARYANT CAM_salon_yemek paketC 640x360 25s
+01:31.537  render           | Saved: '/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/rooms/CAM_hol_paketC.jpg'
+NK renderlog: CAM_hol 24.35 sn (hazırlık 22.34, örnek 2.01) ≈ $0.006
+VARYANT CAM_hol paketC 640x360 24s
+01:55.608  render           | Saved: '/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/rooms/CAM_banyo_paketC.jpg'
+NK renderlog: CAM_banyo 23.97 sn (hazırlık 22.04, örnek 1.93) ≈ $0.0059
+VARYANT CAM_banyo paketC 640x360 24s
+REF BINA kaynak (-12.32, -1.14, 0.15)..(0.02, 18.01, 15.55) bu sahne (-11.31, -1.14, 0.15)..(0.02, 18.01, 15.55)
+POLYS /workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/ext/sokak/CAM_street_polys.json
+== 00:39:57 dış sokak --tag gunduz
+CIHAZ OPTIX ['NVIDIA GeForce RTX 4090']
+VARYANT CAM_street gunduz 960x540 16s
+== 00:40:22 dış sokak --time dusk --tag aksam
+PENCERE ISIGI 2 cam malzemesi
+SAAT dusk
+CIHAZ OPTIX ['NVIDIA GeForce RTX 4090']
+VARYANT CAM_street aksam 960x540 16s
+== 00:40:48 dış sokak --time night --tag gece
+PENCERE ISIGI 2 cam malzemesi
+SAAT night
+CIHAZ OPTIX ['NVIDIA GeForce RTX 4090']
+VARYANT CAM_street gece 960x540 16s
+== 00:41:13 dış sokak --season winter --tag kis
+KIS kar 128 malzeme
+CIHAZ OPTIX ['NVIDIA GeForce RTX 4090']
+VARYANT CAM_street kis 960x540 15s
+== 00:41:38 dış sokak --clay --tag maket
+MAKET 130 malzeme
+CIHAZ OPTIX ['NVIDIA GeForce RTX 4090']
+VARYANT CAM_street maket 960x540 15s
+REF BINA kaynak (-12.32, -1.14, 0.15)..(0.02, 18.01, 15.55) bu sahne (-11.31, -1.14, 0.15)..(0.02, 18.01, 15.55)
+POLYS /workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/ext/bahce/CAM_rear_polys.json
+== 00:42:13 dış bahce --tag gunduz
+CIHAZ OPTIX ['NVIDIA GeForce RTX 4090']
+VARYANT CAM_rear gunduz 960x540 16s
+== 00:42:37 dış bahce --time dusk --tag aksam
+PENCERE ISIGI 2 cam malzemesi
+SAAT dusk
+CIHAZ OPTIX ['NVIDIA GeForce RTX 4090']
+VARYANT CAM_rear aksam 960x540 16s
+== 00:43:02 dış bahce --time night --tag gece
+PENCERE ISIGI 2 cam malzemesi
+SAAT night
+CIHAZ OPTIX ['NVIDIA GeForce RTX 4090']
+VARYANT CAM_rear gece 960x540 16s
+== 00:43:27 dış bahce --season winter --tag kis
+KIS kar 128 malzeme
+CIHAZ OPTIX ['NVIDIA GeForce RTX 4090']
+VARYANT CAM_rear kis 960x540 15s
+== 00:43:51 dış bahce --clay --tag maket
+MAKET 130 malzeme
+CIHAZ OPTIX ['NVIDIA GeForce RTX 4090']
+VARYANT CAM_rear maket 960x540 15s
+BINA GLB /workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/ext/bina_raw.glb 154 nesne 11744 KB  kutu (-11.31, -1.14, 0.15)..(0.02, 18.01, 15.55)
+== 00:44:37 BİTTİ
+/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick:
+ext
+plan_renk.png
+rooms
+run.log
+tour
+
+/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/ext:
+bahce
+bina_raw.glb
+sokak
+
+/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/ext/bahce:
+CAM_rear_aksam.jpg
+CAM_rear_gece.jpg
+CAM_rear_gunduz.jpg
+CAM_rear_kis.jpg
+CAM_rear_maket.jpg
+CAM_rear_polys.json
+
+/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/ext/sokak:
+CAM_street_aksam.jpg
+CAM_street_gece.jpg
+CAM_street_gunduz.jpg
+CAM_street_kis.jpg
+CAM_street_maket.jpg
+CAM_street_polys.json
+
+/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/rooms:
+CAM_banyo_paketA.jpg
+CAM_banyo_paketB.jpg
+CAM_banyo_paketC.jpg
+CAM_hol_paketA.jpg
+CAM_hol_paketB.jpg
+CAM_hol_paketC.jpg
+CAM_salon_yasam_paketA.jpg
+CAM_salon_yasam_paketB.jpg
+CAM_salon_yasam_paketC.jpg
+CAM_salon_yemek_paketA.jpg
+CAM_salon_yemek_paketB.jpg
+CAM_salon_yemek_paketC.jpg
+
+/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/tour:
+depth
+pano
+
+/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/tour/depth:
+balkon.png
+banyo.png
+salon5.png
+
+/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick/tour/pano:
+balkon.jpg
+banyo.jpg
+salon5.jpg
+28M	/workspace/NAKKASHANE/projects/NK-2026-003-gultekin-sokak-126-14/04_renders/site_v4_quick
