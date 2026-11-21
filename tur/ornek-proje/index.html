@@ -192,7 +192,8 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
   .packs>.lbl{display:none}.packs .opts{flex-direction:row}.packs .opts button span.t{display:none}
   .oda-bar{padding-top:6px}.pill{padding:7px 11px}
   .ctrl{top:calc(60px + env(safe-area-inset-top,0px));padding:7px 10px;gap:5px;width:250px}
-  .ctrl .lbl{display:none}.ctrl .row.more .ticks{font-size:10.5px}
+  .ctrl .lbl{display:none}.ctrl .row.more .ticks{font-size:10.5px}.ctrl .seg button{padding:5px 9px;font-size:12px}
+  .shots button{width:72px}
   .proje-card p,.proje-card .facts{display:none}.proje-card{padding:10px 12px}.proje-card h1{font-size:20px}
   .floorcard{padding:10px 12px;gap:6px}.floorcard h2{font-size:18px}
   #v-proje .tapnote{display:none}
@@ -237,7 +238,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
     <div class="eyebrow">Örnek proje</div>
     <h1>Traverten cepheli 2+1 daireler</h1>
     <p>Zemin üstü üç normal katlı konut. Her normal katta iki daire; burada arka bahçeye bakan daireyi geziyorsunuz.</p>
-    <div class="facts"><span>2+1</span><span>69 m² net</span><span>7 oda görseli</span><span>İçinde yürünebilir tur</span></div>
+    <div class="facts"><span>2+1</span><span>69 m² net</span><span>7 iç mekân görseli</span><span>İçinde yürünebilir tur</span></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="cta" href="../ornek-daire/">İçeride yürüyün</a><button class="cta ghost" data-go="plan">Planı incele</button></div>
   </div>
   <div class="shots glass" role="group" aria-label="Dış görünüşler">
@@ -287,21 +288,21 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 // Rooms: renk plan coordinates come from the model (x,y in metres, plan bounds below); cizgi coordinates were read off the approved floor plan.
 const B={x0:-13.0,x1:0.2,y0:9.3,y1:18.1};
 const ROOMS=[
- {id:'salon_yasam',n:1,name:'Salon',sub:'Oturma alanı',m2:'21,32 m²',x:-8.6,y:15.6,c:[24,30],img:'salon_yasam',p360:'salon',
-  text:'Arka bahçeye bakan oturma alanı; yemek bölümüyle tek, ferah bir hacim.'},
+ {id:'salon_yasam',n:1,name:'Salon',sub:'Oturma alanı',m2:'21,32 m²',x:-8.6,y:15.6,c:[36,40],img:'salon_yasam',p360:'salon',
+  text:'Arka ve yan bahçeye bakan oturma alanı; yemek bölümüyle tek, ferah bir hacim.'},
  {id:'salon_yemek',n:1,name:'Salon',sub:'Yemek alanı',m2:'21,32 m²',x:-8.5,y:13.3,c:[30,40],img:'salon_yemek',p360:'yemek',
   text:'Salonun hole yakın bölümündeki yemek alanı.'},
- {id:'mutfak',n:2,name:'Mutfak',sub:'',m2:'13,80 m²',x:-6.3,y:10.9,c:[36,80],img:'mutfak',p360:'mutfak',
+ {id:'mutfak',n:2,name:'Mutfak',sub:'',m2:'13,80 m²',x:-6.3,y:10.9,c:[31,78],img:'mutfak',p360:'mutfak',
   text:'Ankastre setli mutfak; kahvaltı masasına yetecek alan.'},
  {id:'hol',n:3,name:'Giriş holü',sub:'',m2:'yakl. 5,2 m²',x:-4.4,y:12.85,c:[62,58],img:'hol',p360:'hol',
   text:'Daire kapısından bütün odalara dağılan hol.'},
- {id:'yatak1',n:4,name:'Yatak odası',sub:'',m2:'13,10 m²',x:-4.9,y:15.8,c:[54,40],img:'yatak1',p360:'yatak1',
+ {id:'yatak1',n:4,name:'Yatak odası',sub:'',m2:'13,10 m²',x:-4.9,y:15.8,c:[63,38],img:'yatak1',p360:'yatak1',
   text:'Arka bahçe cephesindeki ebeveyn odası.'},
- {id:'yatak2',n:5,name:'İkinci yatak odası',sub:'',m2:'11,30 m²',x:-1.6,y:16.0,c:[84,36],img:'yatak2',p360:'yatak2',
+ {id:'yatak2',n:5,name:'İkinci yatak odası',sub:'',m2:'11,30 m²',x:-1.6,y:16.0,c:[77,28],img:'yatak2',p360:'yatak2',
   text:'Çocuk ya da çalışma odası olarak kullanılabilir; bahçe cephesinde.'},
- {id:'banyo',n:6,name:'Banyo',sub:'',m2:'4,25 m²',x:-1.2,y:13.3,c:[90,62],img:'banyo',p360:'banyo',
+ {id:'banyo',n:6,name:'Banyo',sub:'',m2:'4,25 m²',x:-1.2,y:13.3,c:[85,45],img:'banyo',p360:'banyo',
   text:'Duşlu banyo.'},
- {id:'balkon',n:7,name:'Balkon',sub:'yürüyüş turunda',m2:'8,36 m²',x:-9.9,y:11.4,c:[13,70],img:null,p360:'balkon',
+ {id:'balkon',n:7,name:'Balkon',sub:'yürüyüş turunda',m2:'8,36 m²',x:-9.9,y:11.4,c:[18,75],img:null,p360:'balkon',
   text:'Mutfaktan çıkılan balkon.'},
 ];
 const byId=Object.fromEntries(ROOMS.map(r=>[r.id,r]));
@@ -385,6 +386,12 @@ function toScreen(x,y){ const sv=document.getElementById('ext'), m=sv.getScreenC
 // building's width (from the floor outlines) and the free space above and below holds the controls.
 function frameExt(){
   const sv=document.getElementById('ext'), W=innerWidth, H=innerHeight, fp=floorPolys(), pts=Object.values(fp).flat();
+  if(pts.length && W/H>=0.8 && H<=520){ // phones held sideways: whole building, left of the controls
+    let y0=Math.min(...pts.map(p=>p[1])), y1=Math.max(...pts.map(p=>p[1])), x0=Math.min(...pts.map(p=>p[0])), x1=Math.max(...pts.map(p=>p[0]));
+    const vh=Math.min((y1-y0)*1.12, 1440), vw=vh*W/H, vy=Math.max(0,Math.min(1440-vh,(y0+y1)/2-vh/2));
+    if(vw>=2560){ sv.setAttribute('viewBox',`0 ${Math.round(vy)} ${Math.round(vw)} ${Math.round(vh)}`); sv.setAttribute('preserveAspectRatio','xMinYMid meet'); return; } // spare width goes under the controls
+    const vx=Math.max(0,Math.min(2560-vw,(x0+x1)/2-0.38*vw));
+    sv.setAttribute('viewBox',`${Math.round(vx)} ${Math.round(vy)} ${Math.round(vw)} ${Math.round(vh)}`); sv.setAttribute('preserveAspectRatio','xMidYMid slice'); return; }
   if(W/H>=0.8||!pts.length){ sv.setAttribute('viewBox','0 0 2560 1440'); sv.setAttribute('preserveAspectRatio','xMidYMid slice'); return; }
   let x0=Math.min(...pts.map(p=>p[0])), x1=Math.max(...pts.map(p=>p[0])); const bw=x1-x0; x0=Math.max(0,x0-bw*0.3); x1=Math.min(2560,x1+bw*0.3);
   const vw=x1-x0, k=vw/W, top=(document.getElementById('ctrl').getBoundingClientRect().bottom||0)+6; // picture starts under the controls
@@ -549,7 +556,6 @@ document.getElementById('o-play').onclick=()=>{ if(timer){stopPlay();return;} se
 
 route();
 </script>
-<script>// 3B appears only once a checked building model is published next to it (img/bina.ok)
-fetch('img/bina.ok',{method:'HEAD'}).then(r=>{if(r.ok)document.querySelector('[data-mode="3d"]').hidden=false}).catch(()=>{});</script>
+<!-- 3B düğmesi: duvarları tam bir bina modeli yayımlanınca [data-mode="3d"] görünür yapılır -->
 </body>
 </html>

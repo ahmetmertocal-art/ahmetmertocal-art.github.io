@@ -322,7 +322,7 @@ function walkTo(target,{look=true,speed=1.35,face=null}={}){
 }
 async function jumpTo(t){ // no walkable path: short fade, then arrive
   path=[]; walking=null; fade.style.opacity=1; await new Promise(r=>setTimeout(r,360));
-  pos.copy(t); lastSel.set(1e9,0,0); select(); await Promise.all(want.map(p=>loadPano(p.id))).catch(()=>{});
+  pos.copy(t); if(faceTo!==null){ lon=faceTo; lat=-4; faceTo=null; } lastSel.set(1e9,0,0); select(); await Promise.all(want.map(p=>loadPano(p.id))).catch(()=>{});
   updateSlots(1); fade.style.opacity=0; onArrive();
 }
 function stepWalk(dt){

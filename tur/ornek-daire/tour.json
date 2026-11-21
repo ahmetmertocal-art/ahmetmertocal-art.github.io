@@ -1,1 +1,329 @@
-{"frame": {"FLOOR": 6.75, "EYE": 1.55, "CX": -5.6, "CY": 13.6}, "plan": {"x0": -13.0, "x1": 0.2, "y0": 9.3, "y1": 18.1}, "start": "salon", "points": [{"id": "salon", "x": -8.6, "y": 15.4, "yaw": 0.0, "room": "salon"}, {"id": "yemek", "x": -7.3, "y": 13.0, "yaw": 180.0, "room": "yemek"}, {"id": "mutfak", "x": -6.0, "y": 11.3, "yaw": 90.0, "room": "mutfak"}, {"id": "hol", "x": -4.4, "y": 12.85, "yaw": 90.0, "room": "hol"}, {"id": "yatak1", "x": -4.2, "y": 14.7, "yaw": 0.0, "room": "yatak1"}, {"id": "yatak2", "x": -1.6, "y": 15.0, "yaw": 0.0, "room": "yatak2"}, {"id": "banyo", "x": -1.5, "y": 12.9, "yaw": 0.0, "room": "banyo"}, {"id": "balkon", "x": -9.7, "y": 11.55, "yaw": 270.0, "room": "balkon"}, {"id": "salon2", "x": -8.2, "y": 16.9, "yaw": 180.0, "room": "salon"}, {"id": "salon3", "x": -9.4, "y": 13.2, "yaw": 0.0, "room": "yemek"}, {"id": "mutfak2", "x": -8.4, "y": 11.2, "yaw": 270.0, "room": "mutfak"}, {"id": "hol2", "x": -5.9, "y": 12.9, "yaw": 90.0, "room": "hol"}, {"id": "hol3", "x": -2.9, "y": 12.8, "yaw": 270.0, "room": "hol"}, {"id": "yatak1b", "x": -4.0, "y": 16.8, "yaw": 180.0, "room": "yatak1"}, {"id": "yatak2b", "x": -2.4, "y": 15.4, "yaw": 90.0, "room": "yatak2"}, {"id": "salon4", "x": -10.0, "y": 16.3, "yaw": 90.0, "room": "salon"}, {"id": "salon5", "x": -7.3, "y": 14.5, "yaw": 270.0, "room": "salon"}, {"id": "mutfak3", "x": -4.6, "y": 11.2, "yaw": 270.0, "room": "mutfak"}, {"id": "yatak2d", "x": -2.5, "y": 16.9, "yaw": 180.0, "room": "yatak2"}], "rooms": [{"id": "salon", "name": "Salon", "m2": "21,32 m²", "main": "salon", "look": 170}, {"id": "yemek", "name": "Yemek alanı", "sub": "Salonun parçası", "m2": "salonla 21,32 m²", "main": "yemek", "look": 340}, {"id": "mutfak", "name": "Mutfak", "m2": "13,80 m²", "main": "mutfak", "look": 250}, {"id": "hol", "name": "Giriş holü", "m2": "≈5,2 m²", "main": "hol", "look": 90}, {"id": "yatak1", "name": "Yatak odası", "m2": "13,10 m²", "main": "yatak1", "look": 300}, {"id": "yatak2", "name": "İkinci yatak odası", "m2": "11,30 m²", "main": "yatak2", "look": 340}, {"id": "banyo", "name": "Banyo", "m2": "4,25 m²", "main": "banyo", "look": 0}, {"id": "balkon", "name": "Balkon", "m2": "8,36 m²", "main": "balkon", "look": 90}], "tour": [{"at": "salon", "pause": 5, "pan": 10}, {"at": "salon2"}, {"at": "salon3"}, {"at": "yemek", "pause": 2, "pan": 8}, {"at": "hol2"}, {"at": "mutfak", "pause": 3, "pan": 12}, {"at": "mutfak2", "pause": 1.5}, {"at": "hol"}, {"at": "yatak1", "pause": 3, "pan": 10}, {"at": "yatak1b", "pause": 1}, {"at": "hol3"}, {"at": "yatak2", "pause": 3, "pan": 10}, {"at": "yatak2b", "pause": 1}, {"at": "hol3"}, {"at": "banyo", "pause": 3, "pan": 14}, {"at": "mutfak2"}, {"at": "balkon", "pause": 3, "pan": 10}], "model": "daire_walk.glb", "mobile": true, "waypoints": [{"x": -6.93, "y": 10.88}, {"x": -4.07, "y": 11.48}, {"x": -3.62, "y": 12.52}, {"x": -5.43, "y": 10.73}, {"x": -7.07, "y": 13.27}, {"x": -2.42, "y": 14.77}, {"x": -7.82, "y": 16.12}, {"x": -3.62, "y": 13.27}, {"x": -2.58, "y": 13.27}, {"x": -7.53, "y": 10.73}, {"x": -4.22, "y": 15.68}, {"x": -6.32, "y": 10.73}, {"x": -7.68, "y": 13.73}, {"x": -6.47, "y": 13.12}]}
+{
+ "frame": {
+  "FLOOR": 6.75,
+  "EYE": 1.55,
+  "CX": -5.6,
+  "CY": 13.6
+ },
+ "plan": {
+  "x0": -13.0,
+  "x1": 0.2,
+  "y0": 9.3,
+  "y1": 18.1
+ },
+ "start": "salon",
+ "points": [
+  {
+   "id": "salon",
+   "x": -8.6,
+   "y": 15.4,
+   "yaw": 0.0,
+   "room": "salon"
+  },
+  {
+   "id": "yemek",
+   "x": -7.6,
+   "y": 13.1,
+   "yaw": 180.0,
+   "room": "yemek"
+  },
+  {
+   "id": "mutfak",
+   "x": -5.9,
+   "y": 11.0,
+   "yaw": 90.0,
+   "room": "mutfak"
+  },
+  {
+   "id": "hol",
+   "x": -4.4,
+   "y": 12.85,
+   "yaw": 90.0,
+   "room": "hol"
+  },
+  {
+   "id": "yatak1",
+   "x": -4.5,
+   "y": 15.1,
+   "yaw": 0.0,
+   "room": "yatak1"
+  },
+  {
+   "id": "yatak2",
+   "x": -1.6,
+   "y": 15.6,
+   "yaw": 0.0,
+   "room": "yatak2"
+  },
+  {
+   "id": "banyo",
+   "x": -1.2,
+   "y": 13.5,
+   "yaw": 0.0,
+   "room": "banyo"
+  },
+  {
+   "id": "balkon",
+   "x": -10.1,
+   "y": 11.25,
+   "yaw": 270.0,
+   "room": "balkon"
+  },
+  {
+   "id": "salon2",
+   "x": -8.2,
+   "y": 16.9,
+   "yaw": 180.0,
+   "room": "salon"
+  },
+  {
+   "id": "salon3",
+   "x": -9.5,
+   "y": 13.8,
+   "yaw": 0.0,
+   "room": "yemek"
+  },
+  {
+   "id": "mutfak2",
+   "x": -8.1,
+   "y": 11.0,
+   "yaw": 270.0,
+   "room": "mutfak"
+  },
+  {
+   "id": "hol2",
+   "x": -5.9,
+   "y": 12.9,
+   "yaw": 90.0,
+   "room": "hol"
+  },
+  {
+   "id": "hol3",
+   "x": -2.9,
+   "y": 12.8,
+   "yaw": 270.0,
+   "room": "hol"
+  },
+  {
+   "id": "yatak1b",
+   "x": -4.5,
+   "y": 16.1,
+   "yaw": 180.0,
+   "room": "yatak1"
+  },
+  {
+   "id": "salon4",
+   "x": -10.0,
+   "y": 16.3,
+   "yaw": 90.0,
+   "room": "salon"
+  },
+  {
+   "id": "salon5",
+   "x": -7.8,
+   "y": 14.4,
+   "yaw": 270.0,
+   "room": "salon"
+  },
+  {
+   "id": "mutfak3",
+   "x": -4.6,
+   "y": 11.2,
+   "yaw": 270.0,
+   "room": "mutfak"
+  }
+ ],
+ "rooms": [
+  {
+   "id": "salon",
+   "name": "Salon",
+   "m2": "21,32 m²",
+   "main": "salon5",
+   "look": 320
+  },
+  {
+   "id": "yemek",
+   "name": "Yemek alanı",
+   "sub": "Salonun parçası",
+   "m2": "salonla 21,32 m²",
+   "main": "yemek",
+   "look": 330
+  },
+  {
+   "id": "mutfak",
+   "name": "Mutfak",
+   "m2": "13,80 m²",
+   "main": "mutfak",
+   "look": 250
+  },
+  {
+   "id": "hol",
+   "name": "Giriş holü",
+   "m2": "≈5,2 m²",
+   "main": "hol",
+   "look": 270
+  },
+  {
+   "id": "yatak1",
+   "name": "Yatak odası",
+   "m2": "13,10 m²",
+   "main": "yatak1",
+   "look": 295
+  },
+  {
+   "id": "yatak2",
+   "name": "İkinci yatak odası",
+   "m2": "11,30 m²",
+   "main": "yatak2",
+   "look": 345
+  },
+  {
+   "id": "banyo",
+   "name": "Banyo",
+   "m2": "4,25 m²",
+   "main": "banyo",
+   "look": 340
+  },
+  {
+   "id": "balkon",
+   "name": "Balkon",
+   "m2": "8,36 m²",
+   "main": "balkon",
+   "look": 120
+  }
+ ],
+ "tour": [
+  {
+   "at": "salon5",
+   "pause": 5,
+   "pan": 10
+  },
+  {
+   "at": "salon2"
+  },
+  {
+   "at": "salon3"
+  },
+  {
+   "at": "yemek",
+   "pause": 2,
+   "pan": 8
+  },
+  {
+   "at": "hol2"
+  },
+  {
+   "at": "hol"
+  },
+  {
+   "at": "yatak1",
+   "pause": 3,
+   "pan": 10
+  },
+  {
+   "at": "yatak1b",
+   "pause": 1
+  },
+  {
+   "at": "hol3"
+  },
+  {
+   "at": "yatak2",
+   "pause": 3,
+   "pan": 10
+  },
+  {
+   "at": "hol3"
+  },
+  {
+   "at": "banyo",
+   "pause": 3,
+   "pan": 14
+  },
+  {
+   "at": "mutfak3"
+  },
+  {
+   "at": "mutfak",
+   "pause": 3,
+   "pan": 12
+  },
+  {
+   "at": "mutfak2",
+   "pause": 1.5
+  },
+  {
+   "at": "balkon",
+   "pause": 3,
+   "pan": 10
+  }
+ ],
+ "waypoints": [
+  {
+   "x": -6.93,
+   "y": 10.88
+  },
+  {
+   "x": -4.07,
+   "y": 11.48
+  },
+  {
+   "x": -3.62,
+   "y": 12.52
+  },
+  {
+   "x": -5.43,
+   "y": 10.73
+  },
+  {
+   "x": -7.07,
+   "y": 13.27
+  },
+  {
+   "x": -2.42,
+   "y": 14.77
+  },
+  {
+   "x": -7.82,
+   "y": 16.12
+  },
+  {
+   "x": -3.62,
+   "y": 13.27
+  },
+  {
+   "x": -2.58,
+   "y": 13.27
+  },
+  {
+   "x": -7.53,
+   "y": 10.73
+  },
+  {
+   "x": -4.22,
+   "y": 15.68
+  },
+  {
+   "x": -6.32,
+   "y": 10.73
+  },
+  {
+   "x": -7.68,
+   "y": 13.73
+  },
+  {
+   "x": -6.47,
+   "y": 13.12
+  },
+  {
+   "x": -8.7,
+   "y": 11.55
+  },
+  {
+   "x": -9.7,
+   "y": 11.55
+  }
+ ],
+ "model": "daire_walk.glb",
+ "mobile": true
+}
