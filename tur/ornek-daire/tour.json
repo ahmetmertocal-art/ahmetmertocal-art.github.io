@@ -105,13 +105,6 @@
    "room": "hol"
   },
   {
-   "id": "yatak1b",
-   "x": -4.5,
-   "y": 16.1,
-   "yaw": 180.0,
-   "room": "yatak1"
-  },
-  {
    "id": "salon4",
    "x": -10.0,
    "y": 16.3,
@@ -124,13 +117,6 @@
    "y": 14.4,
    "yaw": 270.0,
    "room": "salon"
-  },
-  {
-   "id": "mutfak3",
-   "x": -4.6,
-   "y": 11.2,
-   "yaw": 270.0,
-   "room": "mutfak"
   }
  ],
  "rooms": [
@@ -221,10 +207,6 @@
    "pan": 10
   },
   {
-   "at": "yatak1b",
-   "pause": 1
-  },
-  {
    "at": "hol3"
   },
   {
@@ -239,9 +221,6 @@
    "at": "banyo",
    "pause": 3,
    "pan": 14
-  },
-  {
-   "at": "mutfak3"
   },
   {
    "at": "mutfak",

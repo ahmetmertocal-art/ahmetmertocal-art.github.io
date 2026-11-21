@@ -335,7 +335,7 @@ const FLOORS={0:'Zemin kat',1:'1. kat',2:'2. kat',3:'3. kat'};
 const SAMPLE_FLOOR=2;   // the modelled apartment
 const ST={view:'sokak',mode:'render',t:0,season:'yaz',floor:null,have:{},polys:{}};
 const NS='http://www.w3.org/2000/svg', lays=document.getElementById('lays'), unitsG=document.getElementById('units');
-const L={}; const SKIP={bahce:['kis']};
+const L={}; const SKIP={bahce:['kis'],sokak:['kis']};
 for(const v of ['sokak','bahce']){ L[v]={}; ST.have[v]={};
   for(const k of VARS){ const im=document.createElementNS(NS,'image'); im.setAttribute('class','lay'); im.setAttribute('width',2560); im.setAttribute('height',1440);
     im.setAttribute('preserveAspectRatio','xMidYMid slice'); im.style.opacity=0; im.dataset.src=`img/ext/${v}_${k}.jpg`; lays.appendChild(im); L[v][k]=im;
